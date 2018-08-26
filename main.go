@@ -14,11 +14,12 @@ import (
 )
 
 func main() {
-	var sshFile, filter string
+	var sshFile, filter, user string
 	var limit int
 	flag.StringVar(&sshFile, "ssh_key", "", "new SSH Key file which have to be added to instances")
 	flag.StringVar(&filter, "filter", "", "regexp to filter instances")
-	flag.IntVar(&limit, "limit", 1, "limit number of instances")
+	flag.StringVar(&user, "user", "", "username to add ssh key, if empty $USER will be taken")
+	flag.IntVar(&limit, "limit", 1, "limit number of instances to add")
 	flag.Parse()
 
 	if sshFile == "" {
@@ -33,7 +34,7 @@ func main() {
 			panic(fmt.Errorf("describe instance errored", err))
 		}
 		keys := desc.sshKeys()
-		newKey, err := readKey(sshFile)
+		newKey, err := readKey(user, sshFile)
 		if err != nil {
 			fmt.Println("Error adding key to instance %s err: %v\n", inst.Name, err)
 		}
@@ -46,7 +47,7 @@ func main() {
 	}
 }
 
-func readKey(filename string) (SSHKey, error) {
+func readKey(user, filename string) (SSHKey, error) {
 	f, err := os.Open(filename)
 	if err != nil {
 		return SSHKey{}, err
@@ -62,7 +63,9 @@ func readKey(filename string) (SSHKey, error) {
 	if len(fields) != 3 {
 		return SSHKey{}, errors.New("Invalid SSH Key Format")
 	}
-	user := os.Getenv("USER")
+	if user == "" {
+		user = os.Getenv("USER")
+	}
 	return SSHKey{username: user + ":" + fields[0], key: fields[1], id: fields[2]}, nil
 }
 
