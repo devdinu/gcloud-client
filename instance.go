@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
 	"io/ioutil"
 	"os"
 )
@@ -11,15 +11,20 @@ type instance struct {
 	Zone string `json:"zone"`
 }
 
-func (in instance) AddSSHKeys(cfg Config, keys []SSHKey) error {
-	fmt.Println("adding keys", keys)
+func (in instance) AddSSHKeys(cfg Config, keys []SSHKey) (string, error) {
 	f, err := createTempFile(keys)
 	if err != nil {
-		return err
+		return "", err
+	}
+	addCmd := AddSSHKeyCmd(in.Name, f.Name(), cfg)
+	rdr, err := execute(addCmd)
+	if err != nil {
+		return "", err
 	}
 	defer os.Remove(f.Name())
-	fmt.Println("Wrote ssh-keys to file: ", f.Name())
-	return nil
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(rdr)
+	return buf.String(), nil
 }
 
 func createTempFile(keys []SSHKey) (*os.File, error) {

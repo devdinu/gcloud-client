@@ -14,22 +14,35 @@ import (
 )
 
 func main() {
-	var sshFile string
+	var sshFile, filter string
+	var limit int
 	flag.StringVar(&sshFile, "ssh_key", "", "new SSH Key file which have to be added to instances")
+	flag.StringVar(&filter, "filter", "", "regexp to filter instances")
+	flag.IntVar(&limit, "limit", 1, "limit number of instances")
 	flag.Parse()
 
 	if sshFile == "" {
 		panic("SSH File is mandatory")
 	}
-	cfg := Config{format: "json", limit: 1}
+	cfg := Config{format: "json", limit: limit, filter: filter}
 	insts, _ := getInstances(cfg)
 	for _, inst := range insts {
-		desc, err := getDescription(inst.Name, Config{format: "json", zone: inst.Zone})
-		fmt.Println("meta", inst.Name, desc.sshKeys(), err)
+		conf := Config{format: "json", zone: inst.Zone}
+		desc, err := getDescription(inst.Name, conf)
+		if err != nil {
+			panic(fmt.Errorf("describe instance errored", err))
+		}
 		keys := desc.sshKeys()
 		newKey, err := readKey(sshFile)
+		if err != nil {
+			fmt.Println("Error adding key to instance %s err: %v\n", inst.Name, err)
+		}
 		keys = append(keys, newKey)
-		inst.AddSSHKeys(cfg, keys)
+		out, err := inst.AddSSHKeys(Config{zone: inst.Zone}, keys)
+		if err != nil {
+			fmt.Printf("Error adding key to instance %s err: %v\n", inst.Name, err)
+		}
+		fmt.Printf("Added key to instance: %s %s\n", inst.Name, out)
 	}
 }
 
@@ -82,7 +95,6 @@ func parseSSHKeys(sshKeys string) []SSHKey {
 	var keys []SSHKey
 	for _, k := range strings.Split(sshKeys, "\n") {
 		fields := strings.Fields(k)
-		fmt.Println(len(fields))
 		if len(fields) >= 3 {
 			keys = append(keys, SSHKey{username: fields[0], key: fields[1], id: fields[2]})
 		}
@@ -110,7 +122,6 @@ func execute(c Command) (io.Reader, error) {
 
 func getInstances(cfg Config) ([]instance, error) {
 	giCmd := GetInstancesCmd(cfg)
-	fmt.Println(giCmd)
 	out, err := execute(giCmd)
 	if err != nil {
 		return nil, err

@@ -46,3 +46,11 @@ func GetInstancesCmd(cfg Config) Command {
 		cmd:    "compute instances list",
 		config: cfg}
 }
+
+func AddSSHKeyCmd(inst, ssh_key_path string, cfg Config) Command {
+	return gcloudCommand{
+		name:   "gcloud",
+		cmd:    fmt.Sprintf("compute instances add-metadata %s --metadata-from-file ssh-keys=%s", inst, ssh_key_path),
+		config: cfg,
+	}
+}

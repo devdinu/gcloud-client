@@ -6,6 +6,7 @@ type Config struct {
 	zone   string
 	format string
 	limit  int
+	filter string
 }
 
 func (c *Config) Zone() string {
@@ -30,6 +31,9 @@ func (c *Config) Flags() []string {
 	}
 	if c.limit != 0 {
 		flags = append(flags, "--limit", fmt.Sprintf("%d", c.limit))
+	}
+	if c.filter != "" {
+		flags = append(flags, "--filter", fmt.Sprintf("name~'%s'", c.filter))
 	}
 	return flags
 }
