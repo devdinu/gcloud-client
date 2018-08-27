@@ -25,8 +25,8 @@ func main() {
 	flag.Parse()
 
 	if sshFile == "" {
-		fmt.Println("SSH File is mandatory")
-		return
+		sshFile = os.Getenv("HOME") + "/.ssh/id_rsa.pub"
+		fmt.Println("Using default $HOME/.ssh/id_rsa.pub as ssh_key")
 	}
 	var insts []instance
 	cfg := Config{format: "json", limit: limit, filter: filter}
