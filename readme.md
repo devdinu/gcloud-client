@@ -36,3 +36,9 @@ You could give `--instance` and `--zone` to add ssh key to single instance, as i
 ```
 gcloud-client --instance=some_instance --zone=asia-zone
 ```
+
+Todo:
+- Display IP after adding the key
+- Adding IP, name mapping to the /etc/hosts file
+- Remove particular ssh key with id
+- Infer id from the sshkey
