@@ -14,34 +14,45 @@ import (
 )
 
 func main() {
-	var sshFile, filter, user string
+	var sshFile, instanceName, zone, filter, user string
 	var limit int
 	flag.StringVar(&sshFile, "ssh_key", "", "new SSH Key file which have to be added to instances")
 	flag.StringVar(&filter, "filter", "", "regexp to filter instances")
 	flag.StringVar(&user, "user", "", "username to add ssh key, if empty $USER will be taken")
 	flag.IntVar(&limit, "limit", 1, "limit number of instances to add")
+	flag.StringVar(&instanceName, "instance", "", "instance to add ssh key, take precedence over the regex filter, would require zone")
+	flag.StringVar(&zone, "zone", "", "zone in which the given instance is present")
 	flag.Parse()
 
 	if sshFile == "" {
-		panic("SSH File is mandatory")
+		fmt.Println("SSH File is mandatory")
+		return
 	}
+	var insts []instance
 	cfg := Config{format: "json", limit: limit, filter: filter}
-	insts, _ := getInstances(cfg)
+	if instanceName == "" || zone == "" {
+		insts, _ = getInstances(cfg)
+	} else {
+		insts = []instance{{Name: instanceName, Zone: zone}}
+	}
 	for _, inst := range insts {
 		conf := Config{format: "json", zone: inst.Zone}
 		desc, err := getDescription(inst.Name, conf)
 		if err != nil {
-			panic(fmt.Errorf("describe instance errored", err))
+			fmt.Println(fmt.Errorf("describe instance errored %v", err))
+			return
 		}
 		keys := desc.sshKeys()
 		newKey, err := readKey(user, sshFile)
 		if err != nil {
 			fmt.Println("Error adding key to instance %s err: %v\n", inst.Name, err)
+			return
 		}
 		keys = append(keys, newKey)
 		out, err := inst.AddSSHKeys(Config{zone: inst.Zone}, keys)
 		if err != nil {
 			fmt.Printf("Error adding key to instance %s err: %v\n", inst.Name, err)
+			return
 		}
 		fmt.Printf("Added key to instance: %s %s\n", inst.Name, out)
 	}
