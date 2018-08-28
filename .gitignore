@@ -1,3 +1,3 @@
-*.json
 *.swp
 gcloud-client
+log

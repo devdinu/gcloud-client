@@ -48,7 +48,7 @@ func main() {
 		keys := desc.sshKeys()
 		newKey, err := readKey(user, sshFile)
 		if err != nil {
-			fmt.Println("Error adding key to instance %s err: %v\n", inst.Name, err)
+			fmt.Printf("Error adding key to instance %s err: %v\n", inst.Name, err)
 			return
 		}
 		keys = append(keys, newKey)

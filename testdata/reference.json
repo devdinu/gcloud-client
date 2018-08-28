@@ -1,0 +1,70 @@
+[
+  {
+    "canIpForward": true,
+    "cpuPlatform": "CPU Platform",
+    "creationTimestamp": "2018-08-24T05:06:07.000+05:30",
+    "deletionProtection": false,
+    "disks": [
+      {
+        "autoDelete": true,
+        "boot": true,
+        "deviceName": "persistent-disk-0",
+        "guestOsFeatures": [
+          {
+            "type": "VIRTIO_SCSI_MULTIQUEUE"
+          }
+        ],
+        "index": 0,
+        "interface": "SCSI",
+        "kind": "compute#attachedDisk",
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-1604-xenial"
+        ],
+        "mode": "READ_WRITE",
+        "source": "https://www.googleapis.com/compute/v1/projects/some-cluster/zones/somezone-a/disks/some-instance-name",
+        "type": "PERSISTENT"
+      }
+    ],
+    "id": "1432536",
+    "kind": "compute#instance",
+    "labelFingerprint": "fingerprint=",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/some-cluster/zones/somezone-a/machineTypes/n1-standard-1",
+    "metadata": {
+      "fingerprint": "fingerprint=",
+      "items": [
+        {
+          "key": "ssh-keys",
+          "value": "test:ssh-rsa dummy-ssh-key some@one"
+        },
+        {
+          "key": "some-key",
+          "value": "some-value"
+        }
+      ],
+      "kind": "compute#metadata"
+    },
+    "name": "some-instance-name",
+    "networkInterfaces": [
+      {
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/some-cluster/global/networks/default",
+        "networkIP": "10.11.12.13",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/some-cluster/regions/somezone/subnetworks/default-subnet"
+      }
+    ],
+    "scheduling": {
+      "automaticRestart": false,
+      "onHostMaintenance": "MIGRATE",
+      "preemptible": false
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/some-cluster/zones/somezone-a/instances/some-instance-name",
+    "startRestricted": false,
+    "status": "RUNNING",
+    "tags": {
+      "items": [
+        "allow-internet"
+      ]
+    },
+    "zone": "https://www.googleapis.com/compute/v1/projects/some-cluster/zones/somezone-a"
+  }
+]

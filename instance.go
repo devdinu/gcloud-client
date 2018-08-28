@@ -8,14 +8,14 @@ import (
 type instance struct {
 	Name              string             `json:"name"`
 	Zone              string             `json:"zone"`
-	networkInterfaces []NetworkInterface `json:"networkInterfaces"`
+	NetworkInterfaces []NetworkInterface `json:"networkInterfaces"`
 }
 
 func (i instance) IP() string {
-	if len(i.networkInterfaces) == 0 {
+	if len(i.NetworkInterfaces) == 0 {
 		return ""
 	}
-	return i.networkInterfaces[0].NetworkIP
+	return i.NetworkInterfaces[0].NetworkIP
 }
 
 type NetworkInterface struct {
