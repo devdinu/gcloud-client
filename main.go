@@ -57,7 +57,7 @@ func main() {
 			fmt.Printf("Error adding key to instance %s err: %v\n", inst.Name, err)
 			return
 		}
-		fmt.Printf("Added key to instance: %s ip: %s %s\n", inst.Name, inst.IP(), out)
+		fmt.Printf("Added key to instance: %s ip: %s status: %s %s\n", inst.Name, inst.IP(), inst.Status, out)
 	}
 }
 

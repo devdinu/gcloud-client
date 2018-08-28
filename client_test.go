@@ -27,6 +27,7 @@ func TestClient(t *testing.T) {
 		Name:              "some-instance-name",
 		Zone:              "https://www.googleapis.com/compute/v1/projects/some-cluster/zones/somezone-a",
 		NetworkInterfaces: []NetworkInterface{{NetworkIP: "10.11.12.13"}},
+		Status:            "RUNNING",
 	}
 	assert.Equal(t, expectedInstance, insts[0])
 }

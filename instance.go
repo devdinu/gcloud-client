@@ -9,6 +9,7 @@ type instance struct {
 	Name              string             `json:"name"`
 	Zone              string             `json:"zone"`
 	NetworkInterfaces []NetworkInterface `json:"networkInterfaces"`
+	Status            string             `json:"status"`
 }
 
 func (i instance) IP() string {
