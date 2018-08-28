@@ -1,30 +1,25 @@
 package main
 
 import (
-	"bytes"
 	"io/ioutil"
 	"os"
 )
 
 type instance struct {
-	Name string `json:"name"`
-	Zone string `json:"zone"`
+	Name              string             `json:"name"`
+	Zone              string             `json:"zone"`
+	networkInterfaces []NetworkInterface `json:"networkInterfaces"`
 }
 
-func (in instance) AddSSHKeys(cfg Config, keys []SSHKey) (string, error) {
-	f, err := createTempFile(keys)
-	if err != nil {
-		return "", err
+func (i instance) IP() string {
+	if len(i.networkInterfaces) == 0 {
+		return ""
 	}
-	addCmd := AddSSHKeyCmd(in.Name, f.Name(), cfg)
-	rdr, err := execute(addCmd)
-	if err != nil {
-		return "", err
-	}
-	defer os.Remove(f.Name())
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(rdr)
-	return buf.String(), nil
+	return i.networkInterfaces[0].NetworkIP
+}
+
+type NetworkInterface struct {
+	NetworkIP string `json:"networkIP"`
 }
 
 func createTempFile(keys []SSHKey) (*os.File, error) {

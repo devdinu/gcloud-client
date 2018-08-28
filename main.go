@@ -1,15 +1,11 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"strings"
 )
 
@@ -28,16 +24,23 @@ func main() {
 		sshFile = os.Getenv("HOME") + "/.ssh/id_rsa.pub"
 		fmt.Println("Using default $HOME/.ssh/id_rsa.pub as ssh_key")
 	}
+
+	c := client{commandExecutor{}}
 	var insts []instance
 	cfg := Config{format: "json", limit: limit, filter: filter}
 	if instanceName == "" || zone == "" {
-		insts, _ = getInstances(cfg)
+		var err error
+		insts, err = c.getInstances(cfg)
+		if err != nil {
+			fmt.Println(fmt.Errorf("get instances errored %v", err))
+			return
+		}
 	} else {
 		insts = []instance{{Name: instanceName, Zone: zone}}
 	}
 	for _, inst := range insts {
 		conf := Config{format: "json", zone: inst.Zone}
-		desc, err := getDescription(inst.Name, conf)
+		desc, err := c.getDescription(inst.Name, conf)
 		if err != nil {
 			fmt.Println(fmt.Errorf("describe instance errored %v", err))
 			return
@@ -49,12 +52,12 @@ func main() {
 			return
 		}
 		keys = append(keys, newKey)
-		out, err := inst.AddSSHKeys(Config{zone: inst.Zone}, keys)
+		out, err := c.AddSSHKeys(inst.Name, Config{zone: inst.Zone}, keys)
 		if err != nil {
 			fmt.Printf("Error adding key to instance %s err: %v\n", inst.Name, err)
 			return
 		}
-		fmt.Printf("Added key to instance: %s %s\n", inst.Name, out)
+		fmt.Printf("Added key to instance: %s ip: %s %s\n", inst.Name, inst.IP(), out)
 	}
 }
 
@@ -123,40 +126,4 @@ type Metadata struct {
 type Item struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
-}
-
-func execute(c Command) (io.Reader, error) {
-	var out bytes.Buffer
-	execCmd := exec.Command(c.Name(), c.Args()...)
-	fmt.Println("Executing command: ", c.String())
-	execCmd.Stdout = &out
-	err := execCmd.Run()
-	return &out, err
-}
-
-func getInstances(cfg Config) ([]instance, error) {
-	giCmd := GetInstancesCmd(cfg)
-	out, err := execute(giCmd)
-	if err != nil {
-		return nil, err
-	}
-	var insts []instance
-	err = json.NewDecoder(out).Decode(&insts)
-	if err != nil {
-		return nil, err
-	}
-	return insts, nil
-}
-
-func getDescription(inst string, cfg Config) (Description, error) {
-	out, err := execute(DescribeCmd(inst, cfg))
-	if err != nil {
-		return Description{}, err
-	}
-	var desc Description
-	err = json.NewDecoder(out).Decode(&desc)
-	if err != nil {
-		return Description{}, err
-	}
-	return desc, nil
 }
