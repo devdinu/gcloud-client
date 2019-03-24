@@ -1,18 +1,18 @@
-package main
+package gcloud
 
 import (
 	"io/ioutil"
 	"os"
 )
 
-type instance struct {
+type Instance struct {
 	Name              string             `json:"name"`
 	Zone              string             `json:"zone"`
 	NetworkInterfaces []NetworkInterface `json:"networkInterfaces"`
 	Status            string             `json:"status"`
 }
 
-func (i instance) IP() string {
+func (i Instance) IP() string {
 	if len(i.NetworkInterfaces) == 0 {
 		return ""
 	}

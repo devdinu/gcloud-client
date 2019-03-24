@@ -42,3 +42,4 @@ Todo:
 - Adding IP, name mapping to the /etc/hosts file
 - Remove particular ssh key with id
 - Infer id from the sshkey
+- Add gci command to do ls, switch projects
