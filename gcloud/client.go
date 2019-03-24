@@ -60,6 +60,20 @@ func (c Client) AddSSHKeys(inst string, cfg command.Config, keys []SSHKey) (stri
 	buf.ReadFrom(rdr)
 	return buf.String(), nil
 }
+
+func (c Client) ListProjects(cfg command.Config) ([]Project, error) {
+	projs, err := c.Execute(command.ListProjects(cfg))
+	if err != nil {
+		return nil, err
+	}
+	var projects []Project
+	err = json.NewDecoder(projs).Decode(&projects)
+	if err != nil {
+		return nil, err
+	}
+	return projects, err
+}
+
 func NewClient(e executor) Client {
 	return Client{e}
 }

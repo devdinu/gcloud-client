@@ -1,0 +1,16 @@
+[
+  {
+    "createTime": "2019-03-24T00:00:00.000Z",
+    "lifecycleState": "ACTIVE",
+    "name": "project-1",
+    "projectId": "gcloud-client-project",
+    "projectNumber": "1"
+  },
+  {
+    "createTime": "2019-03-23T00:00:00.000Z",
+    "lifecycleState": "ACTIVE",
+    "name": "project-2",
+    "projectId": "gcloud-client-project",
+    "projectNumber": "2"
+  }
+]

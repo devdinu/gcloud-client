@@ -1,10 +1,7 @@
 package command
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"os/exec"
 )
 
 func AddSSHKeyCmd(inst, ssh_key_path string, cfg Config) gcloudCommand {
@@ -22,13 +19,18 @@ func GetInstancesCmd(cfg Config) gcloudCommand {
 		config: cfg}
 }
 
-type Executor struct{}
+func ListProjects(cfg Config) gcloudCommand {
+	return gcloudCommand{
+		name:   "gcloud",
+		cmd:    "projects list",
+		config: cfg,
+	}
+}
 
-func (e Executor) Execute(c Command) (io.Reader, error) {
-	var out bytes.Buffer
-	execCmd := exec.Command(c.Name(), c.Args()...)
-	fmt.Println("Executing command: ", c.String())
-	execCmd.Stdout = &out
-	err := execCmd.Run()
-	return &out, err
+func DescribeCmd(inst string, cfg Config) gcloudCommand {
+	return gcloudCommand{
+		name:   "gcloud",
+		cmd:    "compute instances describe " + inst,
+		config: cfg,
+	}
 }

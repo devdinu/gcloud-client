@@ -1,7 +1,10 @@
 package command
 
 import (
+	"bytes"
 	"fmt"
+	"io"
+	"os/exec"
 	"strings"
 )
 
@@ -26,16 +29,19 @@ func (cmd gcloudCommand) String() string {
 	return fmt.Sprintf("%s %s %s", cmd.name, cmd.cmd, strings.Join(cmd.config.Flags(), " "))
 }
 
-func DescribeCmd(inst string, cfg Config) gcloudCommand {
-	return gcloudCommand{
-		name:   "gcloud",
-		cmd:    "compute instances describe " + inst,
-		config: cfg,
-	}
-}
-
 type Command interface {
 	Name() string
 	Args() []string
 	String() string
+}
+
+type Executor struct{}
+
+func (e Executor) Execute(c Command) (io.Reader, error) {
+	var out bytes.Buffer
+	execCmd := exec.Command(c.Name(), c.Args()...)
+	fmt.Println("Executing command: ", c.String())
+	execCmd.Stdout = &out
+	err := execCmd.Run()
+	return &out, err
 }
