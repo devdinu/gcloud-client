@@ -3,10 +3,11 @@ package command
 import "fmt"
 
 type Config struct {
-	Zone   string
-	Format string
-	Limit  int
-	Filter string
+	Zone    string
+	Format  string
+	Limit   int
+	Filter  string
+	Project string
 }
 
 func (c *Config) Flags() []string {
@@ -22,6 +23,9 @@ func (c *Config) Flags() []string {
 	}
 	if c.Filter != "" {
 		flags = append(flags, "--filter", fmt.Sprintf("name~'%s'", c.Filter))
+	}
+	if c.Project != "" {
+		flags = append(flags, "--project", c.Project)
 	}
 	return flags
 }

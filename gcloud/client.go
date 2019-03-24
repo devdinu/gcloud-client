@@ -17,6 +17,7 @@ type Client struct {
 	executor
 }
 
+//TODO: get project name as arg
 func (c Client) GetInstances(cfg command.Config) ([]Instance, error) {
 	giCmd := command.GetInstancesCmd(cfg)
 	out, err := c.Execute(giCmd)
