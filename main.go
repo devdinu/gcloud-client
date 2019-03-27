@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"github.com/devdinu/gcloud-client/command"
 	"github.com/devdinu/gcloud-client/config"
 	"github.com/devdinu/gcloud-client/gcloud"
+	"github.com/devdinu/gcloud-client/store"
 )
 
 func main() {
@@ -24,7 +26,7 @@ func main() {
 	if os.Args[1] == "ssh_access" || os.Args[1] == "" {
 		cmdAction = action.AddSSHKeys
 	} else if os.Args[1] == "instances" {
-		cmdAction = action.RefreshInstances
+		cmdAction = action.RefreshInstances(context.Background(), store.NewDB())
 	} else {
 		flag.Usage()
 		return
