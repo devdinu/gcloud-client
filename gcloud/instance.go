@@ -10,6 +10,7 @@ type Instance struct {
 	Zone              string             `json:"zone"`
 	NetworkInterfaces []NetworkInterface `json:"networkInterfaces"`
 	Status            string             `json:"status"`
+	Project           string             `json:"projectID"`
 }
 
 func (i Instance) IP() string {

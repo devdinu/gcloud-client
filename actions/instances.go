@@ -11,6 +11,7 @@ import (
 )
 
 type store interface {
+	CreateBuckets(names []string) error
 	Save(context.Context, <-chan gcloud.Instance, *sync.WaitGroup) error
 }
 
@@ -22,7 +23,7 @@ func RefreshInstances(ctx context.Context, s store) Action {
 		}
 		var wg sync.WaitGroup
 		wg.Add(1)
-		insts := refreshProjects(ctx, c)
+		insts := refreshProjects(ctx, c, s)
 		go s.Save(ctx, insts, &wg)
 		fmt.Println("waiting for all goroutines to complete")
 		wg.Wait()
@@ -30,7 +31,7 @@ func RefreshInstances(ctx context.Context, s store) Action {
 	}
 }
 
-func refreshProjects(ctx context.Context, c gcloud.Client) <-chan gcloud.Instance {
+func refreshProjects(ctx context.Context, c gcloud.Client, s store) <-chan gcloud.Instance {
 	instances := make(chan gcloud.Instance, 10)
 	go func() {
 		var lwg sync.WaitGroup
@@ -38,11 +39,15 @@ func refreshProjects(ctx context.Context, c gcloud.Client) <-chan gcloud.Instanc
 		cmdCfg := command.Config{Zone: args.Zone, Limit: args.Limit, Format: args.Format}
 		projs, err := c.ListProjects(cmdCfg)
 		if err != nil {
-			fmt.Errorf("[Instances] list projects failed with error %v", err)
+			fmt.Printf("[Instances] list projects failed with error %v", err)
 			return
 		}
 		lwg.Add(len(projs))
 		for _, pr := range projs {
+			if err := s.CreateBuckets([]string{pr.Name}); err != nil {
+				fmt.Printf("[Instances] couldn't create bucket %v", pr)
+				continue
+			}
 			go getInstancesForProject(ctx, instances, c, pr, cmdCfg, &lwg)
 		}
 		lwg.Wait()

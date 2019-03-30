@@ -26,7 +26,12 @@ func main() {
 	if os.Args[1] == "ssh_access" || os.Args[1] == "" {
 		cmdAction = action.AddSSHKeys
 	} else if os.Args[1] == "instances" {
-		cmdAction = action.RefreshInstances(context.Background(), store.NewDB())
+		db, err := store.NewDB()
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
+		cmdAction = action.RefreshInstances(context.Background(), db)
 	} else {
 		flag.Usage()
 		return
