@@ -35,11 +35,40 @@ You could give `--instance` and `--zone` to add ssh key to single instance, as i
 
 ```
 gcloud-client --instance=some_instance --zone=asia-zone
+
 ```
 
+
+## CheatSheet
+globals flags:
+timeout
+
+```
+gcloud-client ssh grant --key=someone-key.pub
+gcloud-ciient ssh revoke --name=someone
+
+// searching
+gcloud-client instances search --prefix vm-prefix-to-search --project=project
+gcloud-client instances search --regex some.*regex
+gcloud-client instances refresh --timeout
+gcloud-cilent instances list --project=specific-project
+
+```
+
+
 Todo:
-- Display IP after adding the key
-- Adding IP, name mapping to the /etc/hosts file
-- Remove particular ssh key with id
-- Infer id from the sshkey
-- Add gci command to do ls, switch projects
+SSH ACCESS
+* [ ] Display IP after adding the key
+* [ ] Adding IP, name mapping to the /etc/hosts file
+* [ ] Remove particular ssh key with id
+* [ ] Infer id from the sshkey
+SEARCH
+* [ ] Display progress bar on refresh projects
+* [ ] store state (Terminated) information and ignore in search, or show
+* [ ] Use knife tags to tag instances than manual
+* [ ] Optimize storing in db performance
+CODE/FEATURES
+* [ ] use logger package
+* [ ] Define a list of global flags
+* [ ] Add gci command to do ls, switch projects
+

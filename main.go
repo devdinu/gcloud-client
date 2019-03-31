@@ -22,21 +22,19 @@ func main() {
 	args := config.GetArgs()
 
 	c := gcloud.NewClient(command.Executor{})
-	var cmdAction action.Action
-	if os.Args[1] == "ssh_access" || os.Args[1] == "" {
-		cmdAction = action.AddSSHKeys
-	} else if os.Args[1] == "instances" {
-		db, err := store.NewDB()
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer db.Close()
-		cmdAction = action.RefreshInstances(context.Background(), db)
-	} else {
-		flag.Usage()
-		return
+	ctx := context.Background()
+	db, err := store.NewDB()
+	if err != nil {
+		log.Fatal(err)
 	}
-	if err := cmdAction(c, args); err != nil {
+	defer db.Close()
+	action.MapActions(ctx, db)
+
+	action, err := action.GetAction(config.GetActionName())
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := action(c, args); err != nil {
 		log.Fatal(err)
 	}
 }

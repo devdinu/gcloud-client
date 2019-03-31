@@ -32,10 +32,10 @@ func (db DB) Save(ctx context.Context, instances <-chan gcloud.Instance, wg *syn
 	defer wg.Done()
 
 	for inst := range instances {
-		db.Update(func(tx *bolt.Tx) error {
+		err := db.Update(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte(inst.Project))
 			if b == nil {
-				return fmt.Errorf("[DB] save instances failed for bucket %s", inst.Project)
+				return fmt.Errorf("[DB] save instances failed for bucket %s inst: %+v", inst.Project, inst)
 			}
 			var data bytes.Buffer
 			if err := gob.NewEncoder(&data).Encode(inst); err != nil {

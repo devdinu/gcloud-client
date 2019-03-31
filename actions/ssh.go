@@ -12,8 +12,6 @@ import (
 	"github.com/devdinu/gcloud-client/gcloud"
 )
 
-type Action func(gcloud.Client, config.Args) error
-
 func AddSSHKeys(c gcloud.Client, args config.Args) error {
 	var insts []gcloud.Instance
 	if args.InstanceName == "" || args.Zone == "" {
