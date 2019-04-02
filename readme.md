@@ -51,8 +51,12 @@ gcloud-ciient ssh revoke --name=someone
 gcloud-client instances search --prefix vm-prefix-to-search --project=project
 gcloud-client instances search --regex some.*regex
 gcloud-client instances refresh --timeout
-gcloud-cilent instances list --project=specific-project
+gcloud-client instances list --project=specific-project
 
+// ssh
+gcloud-client instances ssh --prefix some-prefix
+gcloud-client instances ssh --tag some-prefix
+ 
 ```
 
 

@@ -50,24 +50,59 @@ func (db DB) Save(ctx context.Context, instances <-chan gcloud.Instance, wg *syn
 	return nil
 }
 
-func (db DB) Search(ctx context.Context, pattern string) ([]gcloud.Instance, error) {
-	var insts []gcloud.Instance
-	db.View(func(tx *bolt.Tx) error {
-		c := tx.Bucket([]byte("wonderful-maps")).Cursor()
-		for k, v := c.Seek([]byte(pattern)); k != nil && bytes.HasPrefix(k, []byte(pattern)); k, v = c.Next() {
-			var data bytes.Buffer
-			gob.NewDecoder(&data).Decode(v)
-			fmt.Println("found: ", string(k), data.String())
+type KeyVals map[string][]byte
+
+// Bucket must exist before write
+func (db DB) Write(ctx context.Context, bucket string, data KeyVals) error {
+	for k, v := range data {
+		err := db.Update(func(tx *bolt.Tx) error {
+			b := tx.Bucket([]byte(bucket))
+			if b == nil {
+				return fmt.Errorf("[DB] Write failed since bucket %s not found", bucket)
+			}
+			return b.Put([]byte(k), v)
+		})
+		if err != nil {
+			return err
 		}
-		return nil
-	})
+	}
+	return nil
+}
+
+func (db DB) Search(ctx context.Context, projs []string, pattern string) ([]gcloud.Instance, error) {
+	var insts []gcloud.Instance
+
+	for _, proj := range projs {
+		err := db.View(func(tx *bolt.Tx) error {
+			b := tx.Bucket([]byte(proj))
+			if b == nil {
+				return fmt.Errorf("Bucket not found for project %s", proj)
+			}
+			c := b.Cursor()
+			for k, v := c.Seek([]byte(pattern)); k != nil && bytes.HasPrefix(k, []byte(pattern)); k, v = c.Next() {
+				var data bytes.Buffer
+				var found gcloud.Instance
+				err := gob.NewDecoder(bytes.NewBuffer(v)).Decode(found)
+				if err != nil {
+					return err
+				}
+				fmt.Println("found: ", string(k), data.String())
+				insts = append(insts, found)
+			}
+			return nil
+		})
+		if err != nil {
+			fmt.Printf("Searching in bucket: %s err: %v\n", proj, err)
+		}
+	}
+
 	return insts, nil
 }
 
-func NewDB() (DB, error) {
-	db, err := bolt.Open("hosts.db", 0600, &bolt.Options{Timeout: time.Second})
+func NewDB(file string) (DB, error) {
+	db, err := bolt.Open(file, 0600, &bolt.Options{Timeout: time.Second})
 	if err != nil {
-		return DB{}, err
+		return DB{}, fmt.Errorf("Init db failed %v, for: %s", err, file)
 	}
 	return DB{db}, nil
 }

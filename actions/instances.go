@@ -28,11 +28,23 @@ func RefreshInstances(ctx context.Context, s dbStore) Action {
 			if err := s.Save(ctx, insts, &wg); err != nil {
 				fmt.Printf("error storing instance: %v", err)
 			}
+			fmt.Println("stored all instances")
 		}()
 		fmt.Println("waiting for all goroutines to complete")
 		wg.Wait()
 		return nil
 	}
+}
+
+func listProjects(ctx context.Context, c gcloud.Client) (gcloud.Projects, error) {
+	args := config.GetArgs()
+	cmdCfg := command.Config{Zone: args.Zone, Limit: args.Limit, Format: args.Format}
+	projs, err := c.ListProjects(cmdCfg)
+	if err != nil {
+		fmt.Printf("[Instances] list projects failed with error %v", err)
+		return nil, err
+	}
+	return gcloud.Projects(projs), nil
 }
 
 func refreshProjects(ctx context.Context, c gcloud.Client, s dbStore) <-chan gcloud.Instance {

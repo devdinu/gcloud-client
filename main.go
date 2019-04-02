@@ -23,7 +23,7 @@ func main() {
 
 	c := gcloud.NewClient(command.Executor{})
 	ctx := context.Background()
-	db, err := store.NewDB()
+	db, err := store.NewDB(config.GetDBFileName())
 	if err != nil {
 		log.Fatal(err)
 	}
