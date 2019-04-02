@@ -2,12 +2,14 @@ package action
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
 	"github.com/devdinu/gcloud-client/command"
 	"github.com/devdinu/gcloud-client/config"
 	"github.com/devdinu/gcloud-client/gcloud"
+	"github.com/devdinu/gcloud-client/logger"
 )
 
 type dbStore interface {
@@ -26,11 +28,11 @@ func RefreshInstances(ctx context.Context, s dbStore) Action {
 		insts := refreshProjects(ctx, c, s)
 		go func() {
 			if err := s.Save(ctx, insts, &wg); err != nil {
-				fmt.Printf("error storing instance: %v", err)
+				logger.Errorf("[Refresh] error storing instance: %v", err)
 			}
-			fmt.Println("stored all instances")
+			logger.Infof("[Refresh] stored all instances")
 		}()
-		fmt.Println("waiting for all goroutines to complete")
+		logger.Debugf("[Refresh] waiting for all goroutines to complete")
 		wg.Wait()
 		return nil
 	}
@@ -41,7 +43,7 @@ func listProjects(ctx context.Context, c gcloud.Client) (gcloud.Projects, error)
 	cmdCfg := command.Config{Zone: args.Zone, Limit: args.Limit, Format: args.Format}
 	projs, err := c.ListProjects(cmdCfg)
 	if err != nil {
-		fmt.Printf("[Instances] list projects failed with error %v", err)
+		logger.Infof("[Instances] list projects failed with error %v", err)
 		return nil, err
 	}
 	return gcloud.Projects(projs), nil
@@ -51,20 +53,21 @@ func refreshProjects(ctx context.Context, c gcloud.Client, s dbStore) <-chan gcl
 	instances := make(chan gcloud.Instance, 10)
 	go func() {
 		var lwg sync.WaitGroup
+		//TODO: replace the chunk with listprojects
 		args := config.GetArgs()
 		cmdCfg := command.Config{Zone: args.Zone, Limit: args.Limit, Format: args.Format}
 		projs, err := c.ListProjects(cmdCfg)
 		if err != nil {
-			fmt.Printf("[Instances] list projects failed with error %v", err)
+			logger.Errorf("[Instances] list projects failed with error %v", err)
 			return
 		}
 		lwg.Add(len(projs))
 		for _, pr := range projs {
 			if err := s.CreateBuckets([]string{pr.ProjectID}); err != nil {
-				fmt.Printf("[Instances] couldn't create bucket %v", pr)
+				logger.Errorf("[Instances] couldn't create bucket %v", pr)
 				continue
 			}
-			fmt.Printf("created bucket %s\n", pr.ProjectID)
+			logger.Debugf("[Instances] created bucket %s\n", pr.ProjectID)
 			go getInstancesForProject(ctx, instances, c, pr, cmdCfg, &lwg)
 		}
 		lwg.Wait()
@@ -84,7 +87,7 @@ func getInstancesForProject(ctx context.Context, instances chan<- gcloud.Instanc
 		i.Project = pr.ProjectID
 		instances <- i
 		if err != nil {
-			return fmt.Errorf("Error storing instance: %v", err)
+			return errors.New("Error storing instance: " + err.Error())
 		}
 	}
 	return nil

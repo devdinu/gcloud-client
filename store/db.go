@@ -10,6 +10,7 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/devdinu/gcloud-client/gcloud"
+	"github.com/devdinu/gcloud-client/logger"
 )
 
 type DB struct {
@@ -41,6 +42,7 @@ func (db DB) Save(ctx context.Context, instances <-chan gcloud.Instance, wg *syn
 			if err := gob.NewEncoder(&data).Encode(inst); err != nil {
 				return err
 			}
+			logger.Debugf("[DB] storing instance %s into bucket: %s", inst.Name, inst.Project)
 			return b.Put([]byte(inst.Name), data.Bytes())
 		})
 		if err != nil {
@@ -73,6 +75,7 @@ func (db DB) Search(ctx context.Context, projs []string, pattern string) ([]gclo
 	var insts []gcloud.Instance
 
 	for _, proj := range projs {
+		logger.Debugf("[PrefixSearch] searching project: %s pattern: %s", proj, pattern)
 		err := db.View(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte(proj))
 			if b == nil {
@@ -82,17 +85,17 @@ func (db DB) Search(ctx context.Context, projs []string, pattern string) ([]gclo
 			for k, v := c.Seek([]byte(pattern)); k != nil && bytes.HasPrefix(k, []byte(pattern)); k, v = c.Next() {
 				var data bytes.Buffer
 				var found gcloud.Instance
-				err := gob.NewDecoder(bytes.NewBuffer(v)).Decode(found)
+				err := gob.NewDecoder(bytes.NewBuffer(v)).Decode(&found)
 				if err != nil {
 					return err
 				}
-				fmt.Println("found: ", string(k), data.String())
+				logger.Debugf("[PrefixSearch] found: %s %v", string(k), data.String())
 				insts = append(insts, found)
 			}
 			return nil
 		})
 		if err != nil {
-			fmt.Printf("Searching in bucket: %s err: %v\n", proj, err)
+			logger.Warnf("Searching in bucket: %s err: %v\n", proj, err)
 		}
 	}
 

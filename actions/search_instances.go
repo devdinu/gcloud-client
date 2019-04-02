@@ -6,6 +6,7 @@ import (
 
 	"github.com/devdinu/gcloud-client/config"
 	"github.com/devdinu/gcloud-client/gcloud"
+	"github.com/devdinu/gcloud-client/logger"
 )
 
 type finder interface {
@@ -27,7 +28,7 @@ func SearchInstancesPrefix(ctx context.Context, f finder) Action {
 		}
 		fmt.Println("Search By Prefix Result: ")
 		for _, ins := range insts {
-			fmt.Println("instance %s", ins.Name)
+			logger.Infof("name: %s ip: %s", ins.Name, ins.IP())
 		}
 		return nil
 	}

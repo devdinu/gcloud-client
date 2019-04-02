@@ -10,6 +10,7 @@ import (
 	"github.com/devdinu/gcloud-client/command"
 	"github.com/devdinu/gcloud-client/config"
 	"github.com/devdinu/gcloud-client/gcloud"
+	"github.com/devdinu/gcloud-client/logger"
 	"github.com/devdinu/gcloud-client/store"
 )
 
@@ -34,6 +35,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	logger.Debugf("[gcloud-client] Executing action: %s", config.GetActionName())
 	if err := action(c, args); err != nil {
 		log.Fatal(err)
 	}

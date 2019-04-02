@@ -18,6 +18,7 @@ type Args struct {
 	Limit                                    int
 	DBFile, SSHFile                          string
 	InstanceCmdArgs
+	LogLevel string
 }
 
 type CmdAction string
@@ -33,7 +34,7 @@ func Load() {
 	var instanceArgs InstanceCmdArgs
 	var sshFile, instanceName, zone, filter string
 	var addHosts bool
-	var dbfile string
+	var dbfile, logLevel string
 
 	sshCommand := flag.NewFlagSet("ssh_access", flag.ContinueOnError)
 	instanceCommand := flag.NewFlagSet("instances", flag.ContinueOnError)
@@ -44,15 +45,17 @@ func Load() {
 	sshCommand.StringVar(&args.User, "user", "", "username to add ssh key, if empty $USER will be taken")
 	sshCommand.StringVar(&args.InstanceName, "instance", "", "instance to add ssh key, take precedence over the regex filter, would require zone")
 	sshCommand.BoolVar(&addHosts, "add_hosts", false, "to add ip host mappings in /etc/hosts")
-
 	sshCommand.StringVar(&zone, "zone", "", "zone in which the given instance is present")
-	sshCommand.StringVar(&dbfile, "dbfile", "hosts.db", "db file to store data")
 	sshCommand.IntVar(&args.Limit, "limit", 1, "limit number of instances to add")
 
 	// refresh should be subcommand and not as flag
 	instanceCommand.BoolVar(&instanceArgs.Refresh, "refresh", true, "refresh instances list in store")
 	instanceCommand.StringVar(&instanceArgs.Prefix, "prefix", "", "search instances by common prefix")
+
+	sshCommand.StringVar(&dbfile, "dbfile", "hosts.db", "db file to store data")
 	instanceCommand.StringVar(&dbfile, "dbfile", "hosts.db", "db file to store data")
+	instanceCommand.StringVar(&logLevel, "level", "info", "log level [info/debug/all]")
+	sshCommand.StringVar(&logLevel, "level", "info", "log level [info/debug/all]")
 
 	flag.Parse()
 	//sshCommand.SetOutput(ioutil.Discard)
@@ -81,11 +84,18 @@ func Load() {
 					}
 				}
 			case "refresh":
+				if err := instanceCommand.Parse(os.Args[3:]); err != nil {
+					log.Fatalf("[Config] Error defining instances command %v", err)
+				}
 				cmdAction = RefreshInstances
+			default:
+				fmt.Println("[Config] no matching commands mentioned")
+				flag.Usage()
 			}
 		}
 	}
 
+	//TODO: inline all pointers as this creates emtpy args
 	args = Args{
 		Zone:            zone,
 		Format:          "json",
@@ -95,6 +105,7 @@ func Load() {
 		SSHFile:         sshFile,
 		InstanceCmdArgs: instanceArgs,
 		DBFile:          dbfile,
+		LogLevel:        logLevel,
 	}
 	fmt.Printf("action %s args: %+v \ncmd args: %v\n", cmdAction, args, os.Args)
 }
@@ -103,3 +114,4 @@ func GetInstanceCmdArgs() InstanceCmdArgs { return args.InstanceCmdArgs }
 func GetArgs() Args                       { return args }
 func GetActionName() CmdAction            { return cmdAction }
 func GetDBFileName() string               { return args.DBFile }
+func LogLevel() string                    { return args.LogLevel }

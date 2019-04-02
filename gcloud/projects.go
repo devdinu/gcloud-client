@@ -11,7 +11,7 @@ type Projects []Project
 func (ps Projects) Names() []string {
 	var names []string
 	for _, p := range ps {
-		names = append(names, p.Name)
+		names = append(names, p.ProjectID)
 	}
 	return names
 }
