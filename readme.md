@@ -44,8 +44,8 @@ globals flags:
 timeout
 
 ```
-gcloud-client ssh grant --key=someone-key.pub
-gcloud-ciient ssh revoke --name=someone
+gcloud-client ssh grant --key=someone-key.pub --prefix=
+gcloud-ciient ssh revoke --name=someone --prefix=
 
 // searching
 gcloud-client instances search --prefix vm-prefix-to-search --project=project
@@ -55,6 +55,7 @@ gcloud-client instances list --project=specific-project
 
 // ssh
 gcloud-client instances ssh --prefix some-prefix
+gcloud-client instances ssh --regex some-prefix
 gcloud-client instances ssh --tag some-prefix
  
 ```

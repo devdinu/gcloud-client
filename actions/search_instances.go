@@ -28,7 +28,7 @@ func SearchInstancesPrefix(ctx context.Context, f finder) Action {
 		}
 		fmt.Println("Search By Prefix Result: ")
 		for _, ins := range insts {
-			logger.Infof("name: %s ip: %s", ins.Name, ins.IP())
+			logger.Infof("%s: name: %s\tip: %s\t", ins.Project, ins.Name, ins.IP())
 		}
 		return nil
 	}

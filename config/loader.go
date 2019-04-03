@@ -32,36 +32,35 @@ var cmdAction CmdAction
 
 func Load() {
 	var instanceArgs InstanceCmdArgs
-	var sshFile, instanceName, zone, filter string
-	var addHosts bool
-	var dbfile, logLevel string
 
 	sshCommand := flag.NewFlagSet("ssh_access", flag.ContinueOnError)
 	instanceCommand := flag.NewFlagSet("instances", flag.ContinueOnError)
 
 	defaultSSHFile := os.Getenv("HOME") + "/.ssh/id_rsa.pub"
-	sshCommand.StringVar(&sshFile, "ssh_key", defaultSSHFile, "new SSH Key file which have to be added to instances")
-	sshCommand.StringVar(&filter, "filter", "", "regexp to filter instances")
+	sshCommand.StringVar(&args.SSHFile, "ssh_key", defaultSSHFile, "new SSH Key file which have to be added to instances")
+	sshCommand.StringVar(&args.Filter, "filter", "", "regexp to filter instances")
 	sshCommand.StringVar(&args.User, "user", "", "username to add ssh key, if empty $USER will be taken")
 	sshCommand.StringVar(&args.InstanceName, "instance", "", "instance to add ssh key, take precedence over the regex filter, would require zone")
-	sshCommand.BoolVar(&addHosts, "add_hosts", false, "to add ip host mappings in /etc/hosts")
-	sshCommand.StringVar(&zone, "zone", "", "zone in which the given instance is present")
-	sshCommand.IntVar(&args.Limit, "limit", 1, "limit number of instances to add")
+	sshCommand.BoolVar(&args.AddHosts, "add_hosts", false, "to add ip host mappings in /etc/hosts")
+	sshCommand.StringVar(&args.Zone, "zone", "", "zone in which the given instance is present")
 
 	// refresh should be subcommand and not as flag
 	instanceCommand.BoolVar(&instanceArgs.Refresh, "refresh", true, "refresh instances list in store")
 	instanceCommand.StringVar(&instanceArgs.Prefix, "prefix", "", "search instances by common prefix")
+	instanceCommand.StringVar(&instanceArgs.Prefix, "regex", "", "search instances by regex")
 
-	sshCommand.StringVar(&dbfile, "dbfile", "hosts.db", "db file to store data")
-	instanceCommand.StringVar(&dbfile, "dbfile", "hosts.db", "db file to store data")
-	instanceCommand.StringVar(&logLevel, "level", "info", "log level [info/debug/all]")
-	sshCommand.StringVar(&logLevel, "level", "info", "log level [info/debug/all]")
+	sshCommand.StringVar(&args.DBFile, "dbfile", "hosts.db", "db file to store data")
+	instanceCommand.StringVar(&args.DBFile, "dbfile", "hosts.db", "db file to store data")
+	instanceCommand.StringVar(&args.LogLevel, "level", "info", "log level [info/debug/all]")
+	sshCommand.StringVar(&args.LogLevel, "level", "info", "log level [info/debug/all]")
+	instanceCommand.IntVar(&args.Limit, "limit", 10, "limit number of instances to search")
+	sshCommand.IntVar(&args.Limit, "limit", 2, "limit number of instances to add")
 
 	flag.Parse()
 	//sshCommand.SetOutput(ioutil.Discard)
 	//instanceCommand.SetOutput(ioutil.Discard)
 
-	fmt.Printf("parse success: %v val: %s \nflagargs: %v \nosArgs:%v %d\n", flag.Parsed(), dbfile, flag.Args(), os.Args, len(os.Args))
+	fmt.Printf("parse success: %v val: %s \nflagargs: %v \nosArgs:%v %d\n", flag.Parsed(), args.DBFile, flag.Args(), os.Args, len(os.Args))
 
 	if len(os.Args) >= 2 {
 		if os.Args[1] == "ssh_access" || os.Args[1] == "" {
@@ -95,18 +94,8 @@ func Load() {
 		}
 	}
 
-	//TODO: inline all pointers as this creates emtpy args
-	args = Args{
-		Zone:            zone,
-		Format:          "json",
-		Filter:          filter,
-		AddHosts:        addHosts,
-		InstanceName:    instanceName,
-		SSHFile:         sshFile,
-		InstanceCmdArgs: instanceArgs,
-		DBFile:          dbfile,
-		LogLevel:        logLevel,
-	}
+	args.InstanceCmdArgs = instanceArgs
+	args.Format = "json"
 	fmt.Printf("action %s args: %+v \ncmd args: %v\n", cmdAction, args, os.Args)
 }
 
