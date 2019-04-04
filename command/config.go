@@ -1,6 +1,8 @@
 package command
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Config struct {
 	Zone    string

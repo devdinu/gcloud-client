@@ -1,13 +1,8 @@
 package command
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"os/exec"
 	"strings"
-
-	"github.com/devdinu/gcloud-client/logger"
 )
 
 type gcloudCommand struct {
@@ -35,15 +30,4 @@ type Command interface {
 	Name() string
 	Args() []string
 	String() string
-}
-
-type Executor struct{}
-
-func (e Executor) Execute(c Command) (io.Reader, error) {
-	var out bytes.Buffer
-	execCmd := exec.Command(c.Name(), c.Args()...)
-	logger.Debugf("[Executor] Executing command: %s", c.String())
-	execCmd.Stdout = &out
-	err := execCmd.Run()
-	return &out, err
 }

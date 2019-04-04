@@ -25,6 +25,7 @@ type CmdAction string
 
 const SshAccess CmdAction = "ssh_access"
 const RefreshInstances CmdAction = "refresh"
+const LoginInstances CmdAction = "login"
 const SearchPrefix CmdAction = "prefix_search"
 
 var args Args
@@ -87,6 +88,11 @@ func Load() {
 					log.Fatalf("[Config] Error defining instances command %v", err)
 				}
 				cmdAction = RefreshInstances
+			case "login":
+				if err := instanceCommand.Parse(os.Args[3:]); err != nil {
+					log.Fatalf("[Config] Error defining instances command %v", err)
+				}
+				cmdAction = LoginInstances
 			default:
 				fmt.Println("[Config] no matching commands mentioned")
 				flag.Usage()

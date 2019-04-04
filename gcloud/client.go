@@ -2,11 +2,14 @@ package gcloud
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"os"
 
 	"github.com/devdinu/gcloud-client/command"
+	"github.com/devdinu/gcloud-client/logger"
 )
 
 type executor interface {
@@ -73,6 +76,20 @@ func (c Client) ListProjects(cfg command.Config) ([]Project, error) {
 		return nil, err
 	}
 	return projects, err
+}
+
+//TODO: move to separate as it doesn't deal with gcloud
+func (c Client) Login(ctx context.Context, insts []Instance, cmd string, cfg command.TmuxConfig) (string, error) {
+	var hosts []string
+	for _, inst := range insts {
+		if inst.Status != "RUNNING" {
+			logger.Debugf("host: %s not running, state: %s", inst.Name, inst.Status)
+		}
+		hosts = append(hosts, inst.IP())
+	}
+	output, err := c.Execute(command.Login(hosts, cmd, cfg))
+	res, _ := ioutil.ReadAll(output)
+	return string(res), err
 }
 
 func NewClient(e executor) Client {

@@ -34,3 +34,15 @@ func DescribeCmd(inst string, cfg Config) gcloudCommand {
 		config: cfg,
 	}
 }
+
+func Login(hosts []string, cmd string, cfg TmuxConfig) Command {
+	if len(hosts) <= 0 {
+		//TODO: introduce nop command
+		return &tmux{}
+	}
+	return &tmux{
+		hosts:      hosts,
+		cmd:        cmd,
+		TmuxConfig: cfg,
+	}
+}
