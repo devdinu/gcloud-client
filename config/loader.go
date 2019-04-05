@@ -12,12 +12,18 @@ type InstanceCmdArgs struct {
 	Refresh bool
 }
 
+type Login struct {
+	Session string
+	User    string
+}
+
 type Args struct {
 	Zone, Format, InstanceName, User, Filter string
 	AddHosts                                 bool
 	Limit                                    int
 	DBFile, SSHFile                          string
 	InstanceCmdArgs
+	Login
 	LogLevel string
 }
 
@@ -38,9 +44,11 @@ func Load() {
 	instanceCommand := flag.NewFlagSet("instances", flag.ContinueOnError)
 
 	defaultSSHFile := os.Getenv("HOME") + "/.ssh/id_rsa.pub"
+	defaultUser := os.Getenv("USER")
+	defaultDBFile := os.Getenv("HOME") + "/hosts.db"
+
 	sshCommand.StringVar(&args.SSHFile, "ssh_key", defaultSSHFile, "new SSH Key file which have to be added to instances")
 	sshCommand.StringVar(&args.Filter, "filter", "", "regexp to filter instances")
-	sshCommand.StringVar(&args.User, "user", "", "username to add ssh key, if empty $USER will be taken")
 	sshCommand.StringVar(&args.InstanceName, "instance", "", "instance to add ssh key, take precedence over the regex filter, would require zone")
 	sshCommand.BoolVar(&args.AddHosts, "add_hosts", false, "to add ip host mappings in /etc/hosts")
 	sshCommand.StringVar(&args.Zone, "zone", "", "zone in which the given instance is present")
@@ -49,19 +57,20 @@ func Load() {
 	instanceCommand.BoolVar(&instanceArgs.Refresh, "refresh", true, "refresh instances list in store")
 	instanceCommand.StringVar(&instanceArgs.Prefix, "prefix", "", "search instances by common prefix")
 	instanceCommand.StringVar(&instanceArgs.Prefix, "regex", "", "search instances by regex")
+	instanceCommand.StringVar(&args.Login.Session, "session", "login-session", "login sesssion name")
 
-	sshCommand.StringVar(&args.DBFile, "dbfile", "hosts.db", "db file to store data")
-	instanceCommand.StringVar(&args.DBFile, "dbfile", "hosts.db", "db file to store data")
+	sshCommand.StringVar(&args.DBFile, "dbfile", defaultDBFile, "db file to store data")
+	instanceCommand.StringVar(&args.DBFile, "dbfile", defaultDBFile, "db file to store data")
 	instanceCommand.StringVar(&args.LogLevel, "level", "info", "log level [info/debug/all]")
 	sshCommand.StringVar(&args.LogLevel, "level", "info", "log level [info/debug/all]")
-	instanceCommand.IntVar(&args.Limit, "limit", 10, "limit number of instances to search")
-	sshCommand.IntVar(&args.Limit, "limit", 2, "limit number of instances to add")
+	instanceCommand.IntVar(&args.Limit, "limit", 0, "limit number of instances to search")
+	sshCommand.IntVar(&args.Limit, "limit", 0, "limit number of instances to add")
+	sshCommand.StringVar(&args.User, "user", defaultUser, "username to add ssh key, if empty $USER will be taken")
+	instanceCommand.StringVar(&args.Login.User, "user", defaultUser, "username for ssh")
 
 	flag.Parse()
 	//sshCommand.SetOutput(ioutil.Discard)
 	//instanceCommand.SetOutput(ioutil.Discard)
-
-	fmt.Printf("parse success: %v val: %s \nflagargs: %v \nosArgs:%v %d\n", flag.Parsed(), args.DBFile, flag.Args(), os.Args, len(os.Args))
 
 	if len(os.Args) >= 2 {
 		if os.Args[1] == "ssh_access" || os.Args[1] == "" {

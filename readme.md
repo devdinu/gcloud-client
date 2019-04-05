@@ -45,23 +45,27 @@ timeout
 
 ```
 gcloud-client ssh grant --key=someone-key.pub --prefix=
-gcloud-ciient ssh revoke --name=someone --prefix=
+gcloud-ciient ssh revoke --name=someone --prefix= # Unimplemented
 
 // searching
 gcloud-client instances search --prefix vm-prefix-to-search --project=project
 gcloud-client instances search --regex some.*regex
 gcloud-client instances refresh --timeout
-gcloud-client instances list --project=specific-project
+gcloud-client instances list --project=specific-project  # WIP
 
 // ssh
 gcloud-client instances ssh --prefix some-prefix
-gcloud-client instances ssh --regex some-prefix
-gcloud-client instances ssh --tag some-prefix
+gcloud-client instances ssh --regex some-prefix # WIP
+gcloud-client instances ssh --tag some-prefix   # WIP
  
 ```
 
 
 Todo:
+* [ ] Use absolute path (sensible default) for db file & configs if required
+* [ ] Setup script to install gcl and tmuxinator template and tmuxinator if needed (2.7)
+* [ ] CI to build binary
+* [ ] enable os.Stdin in cmd.execute
 SSH ACCESS
 * [ ] Display IP after adding the key
 * [ ] Adding IP, name mapping to the /etc/hosts file
@@ -73,7 +77,7 @@ SEARCH
 * [ ] Use knife tags to tag instances than manual
 * [ ] Optimize storing in db performance
 CODE/FEATURES
-* [ ] use logger package
-* [ ] Define a list of global flags
+* [X] use logger package
+* [X] Define a list of global flags
 * [ ] Add gci command to do ls, switch projects
 

@@ -33,11 +33,10 @@ func (il InstanceLogin) Login(c gcloud.Client, args config.Args) error {
 	}
 	tmuxCfg := command.TmuxConfig{
 		Project: "ssh_instances_pane_cmd",
-		Session: "test-tmuxinator",
+		Session: args.Login.Session,
 	}
-	tmuxCfg.AddArg("user", "dinesh.kumar")
-	res, err := c.Login(il.ctx, insts, "hostname", tmuxCfg)
-	fmt.Printf("Output: %s \ntmcfg:%+v\n", res, tmuxCfg)
+	tmuxCfg.AddArg("user", args.Login.User)
+	_, err = c.Login(il.ctx, insts, "hostname", tmuxCfg)
 	return err
 }
 
