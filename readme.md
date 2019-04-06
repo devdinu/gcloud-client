@@ -3,8 +3,12 @@
  scripts to do things which you wish google console client does.
 
 ## Installation
-- required `gcloud` installed, authenticated with project config set
-- install lib with `go get -u github.com/devdinu/gcloud-client`
+- required libs
+    - `gcloud` authenticated with project config set
+    - [tmux](https://github.com/tmux/tmux)
+    - [tmuxinator](https://github.com/tmuxinator/tmuxinator)
+- install with `go get -u github.com/devdinu/gcloud-client`
+- or with `sh scripts/install.sh`
 
 ## Usage
 - `gcloud-client --help` to show the help with flag information

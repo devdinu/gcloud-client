@@ -1,0 +1,17 @@
+# /~.config/tmuxinator/ssh_instances_pane_cmd.yml OR at dir $TMUXINATOR_CONFIG
+
+name: <%= @settings["session_name"]=="" ? ssh_instances : @settings["session_name"] %>
+root: ~/
+windows:
+  - dev:
+      layout: main-vertical
+      panes:
+  <% for @host in @settings["hosts"].split(",") %>
+        - <%= @host %>:
+          - echo <%= @host %>
+          - ssh <%= @host %> -l <%= @settings["user"] %>
+          - set -o vi
+          - hostname
+          - clear
+          - <%= @settings["cmd"] %>
+  <% end %>
