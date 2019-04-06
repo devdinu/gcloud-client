@@ -2,7 +2,7 @@
 
 set -ex
 
-_TMUX_DEF_DIR="${HOME}/.config/tmuxinator/"
+_TMUX_DEF_DIR="~/.config/tmuxinator/"
 _TMUX_DIR="${TMUXINATOR_CONFIG:-$_TMUX_DEF_DIR}"
 _CONFIG_DIR="${CONFIG_DIR:-${HOME}/.gcloud-client/}"
 GOPATH="${GOPATH:-$TMPDIR}"
@@ -13,7 +13,7 @@ echo "Using $GOPATH for lib installation"
 echo "Project dir $_PROJ_DIR"
 
 mkdir -p ${GOPATH}/{src,bin}
-mkdir -p ${_TMUX_DIR}
+mkdir -p ${_TMUX_DIR} ${_PROJ_DIR}
 
 
 [[ -d "$_PROJ_DIR/gcloud-client" ]] || (echo "sym linking dir to ${_PROJ_DIR} " && ln -s $PWD ${_PROJ_DIR})
