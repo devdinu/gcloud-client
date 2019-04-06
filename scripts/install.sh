@@ -16,7 +16,7 @@ mkdir -p ${GOPATH}/{src,bin}
 mkdir -p ${_TMUX_DIR} ${_PROJ_DIR}
 
 
-[[ -d "$_PROJ_DIR/gcloud-client" ]] || (echo "sym linking dir to ${_PROJ_DIR} " && ln -s $PWD ${_PROJ_DIR})
+[[ -d "$_PROJ_DIR/gcloud-client" ]] || (echo "sym linking dir to ${_PROJ_DIR} " && ln -s $PWD ${_PROJ_DIR}/gcloud-client)
 
 pushd $_PROJ_DIR/gcloud-client
 cp -vf ./scripts/templates/*.yml ${_TMUX_DIR}/
