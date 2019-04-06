@@ -3,12 +3,18 @@
  scripts to do things which you wish google console client does.
 
 ## Installation
-- required libs
-    - `gcloud` authenticated with project config set
-    - [tmux](https://github.com/tmux/tmux)
-    - [tmuxinator](https://github.com/tmuxinator/tmuxinator)
-- install with `go get -u github.com/devdinu/gcloud-client`
-- or with `sh scripts/install.sh`
+
+### Required libs
+- [gcloud](https://cloud.google.com/sdk/gcloud) authenticated with projects and config set
+- [tmux](https://github.com/tmux/tmux)
+- [tmuxinator](https://github.com/tmuxinator/tmuxinator)
+
+### Go
+`go get -u github.com/devdinu/gcloud-client`
+
+### Homebrew
+`brew install devdinu/devlife/gcloud-client`
+
 
 ## Usage
 - `gcloud-client --help` to show the help with flag information
@@ -31,7 +37,7 @@ You could customize the flags
 
 
 ```
-gcloud-client --ssh_key=$HOME/.ssh/id_rsa.pub --filter='.*pg.*' --limit=1 --user username
+gcloud-client --ssh_key=$HOME/.ssh/id_rsa.pub --filter='.*pg.*' --limit=10 --user username
 ```
 
 ### Add to single instance
@@ -58,7 +64,7 @@ gcloud-client instances refresh --timeout
 gcloud-client instances list --project=specific-project  # WIP
 
 // ssh
-gcloud-client instances ssh --prefix some-prefix
+gcloud-client instances ssh --prefix some-prefix --user username --session session_name
 gcloud-client instances ssh --regex some-prefix # WIP
 gcloud-client instances ssh --tag some-prefix   # WIP
  
