@@ -16,7 +16,7 @@ var actions map[config.CmdAction]Action
 func MapActions(ctx context.Context, db store.DB) {
 	actions = make(map[config.CmdAction]Action)
 	actions[config.SshAccess] = AddSSHKeys
-	actions[config.RefreshInstances] = RefreshInstances(ctx, db)
+	actions[config.RefreshInstances] = Refresher{ctx: ctx, store: db}.RefreshInstances
 	actions[config.SearchPrefix] = SearchInstancesPrefix(ctx, db)
 	actions[config.LoginInstances] = NewLogin(ctx, db).Login
 

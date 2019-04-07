@@ -26,7 +26,7 @@ func SearchInstancesPrefix(ctx context.Context, f finder) Action {
 			fmt.Printf("[Search] couldn't search instances with prefix %s err: %v", pattern, err)
 			return err
 		}
-		fmt.Println("Search By Prefix Result: ")
+		logger.Infof("Search By Prefix Result: ")
 		for _, ins := range insts {
 			logger.Infof("%s: name: %s\tip: %s\t", ins.Project, ins.Name, ins.IP())
 		}

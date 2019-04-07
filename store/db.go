@@ -32,8 +32,21 @@ func (db DB) CreateBuckets(names []string) error {
 func (db DB) Save(ctx context.Context, instances <-chan gcloud.Instance, wg *sync.WaitGroup) error {
 	defer wg.Done()
 
+	var batchInsts []gcloud.Instance
 	for inst := range instances {
-		err := db.Update(func(tx *bolt.Tx) error {
+		batchInsts = append(batchInsts, inst)
+		if len(batchInsts) >= 50 {
+			db.updateBatch(batchInsts)
+			batchInsts = []gcloud.Instance{}
+		}
+	}
+	db.updateBatch(batchInsts)
+	return nil
+}
+
+func (db DB) updateBatch(instances []gcloud.Instance) error {
+	err := db.Update(func(tx *bolt.Tx) error {
+		for _, inst := range instances {
 			b := tx.Bucket([]byte(inst.Project))
 			if b == nil {
 				return fmt.Errorf("[DB] save instances failed for bucket %s inst: %+v", inst.Project, inst)
@@ -44,12 +57,10 @@ func (db DB) Save(ctx context.Context, instances <-chan gcloud.Instance, wg *syn
 			}
 			logger.Debugf("[DB] storing instance %s into bucket: %s", inst.Name, inst.Project)
 			return b.Put([]byte(inst.Name), data.Bytes())
-		})
-		if err != nil {
-			return err
 		}
-	}
-	return nil
+		return nil
+	})
+	return err
 }
 
 type KeyVals map[string][]byte

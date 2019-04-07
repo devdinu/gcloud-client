@@ -75,19 +75,27 @@ Todo:
 * [ ] Use absolute path (sensible default) for db file & configs if required
 * [ ] Setup script to install gcl and tmuxinator template and tmuxinator if needed (2.7)
 * [ ] CI to build binary
-* [ ] enable os.Stdin in cmd.execute
+* [X] enable os.Stdin in cmd.execute
+
 SSH ACCESS
 * [ ] Display IP after adding the key
 * [ ] Adding IP, name mapping to the /etc/hosts file
 * [ ] Remove particular ssh key with id
 * [ ] Infer id from the sshkey
+
 SEARCH
 * [ ] Display progress bar on refresh projects
 * [ ] store state (Terminated) information and ignore in search, or show
-* [ ] Use knife tags to tag instances than manual
 * [ ] Optimize storing in db performance
+    * [X] used goroutines for each project with multiple workers
+    * [ ] Write benchmark
+* [ ] List projects to use cache
+* [ ] Override projects from cmdline
+
 CODE/FEATURES
 * [X] use logger package
 * [X] Define a list of global flags
 * [ ] Add gci command to do ls, switch projects
 
+Maybe Laaaaater.
+* [ ] Use knife tags to tag instances than manual

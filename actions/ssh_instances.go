@@ -2,7 +2,6 @@ package action
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/devdinu/gcloud-client/command"
 	"github.com/devdinu/gcloud-client/config"
@@ -24,10 +23,10 @@ func (il InstanceLogin) Login(c gcloud.Client, args config.Args) error {
 	//TODO: override with commandline projects to reduce search space
 	insts, err := il.f.Search(il.ctx, projs.Names(), pattern)
 	if err != nil {
-		fmt.Printf("[Search] couldn't search instances with prefix %s err: %v", pattern, err)
+		logger.Errorf("[Search] couldn't search instances with prefix %s err: %v", pattern, err)
 		return err
 	}
-	fmt.Println("Search By Prefix Result: ")
+	logger.Infof("Search By Prefix Result: ")
 	for _, ins := range insts {
 		logger.Infof("%s: name: %s\tip: %s\t", ins.Project, ins.Name, ins.IP())
 	}
