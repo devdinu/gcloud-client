@@ -15,10 +15,15 @@ var actions map[config.CmdAction]Action
 
 func MapActions(ctx context.Context, db store.DB) {
 	actions = make(map[config.CmdAction]Action)
+
+	lister := lister{store: db}
+	login := InstanceLogin{ctx: ctx, f: db, lister: lister}
+	srch := searcher{ctx: ctx, lister: lister, finder: db}
+
 	actions[config.SshAccess] = AddSSHKeys
 	actions[config.RefreshInstances] = Refresher{ctx: ctx, store: db}.RefreshInstances
-	actions[config.SearchPrefix] = SearchInstancesPrefix(ctx, db)
-	actions[config.LoginInstances] = NewLogin(ctx, db).Login
+	actions[config.SearchPrefix] = srch.SearchInstancesPrefix
+	actions[config.LoginInstances] = login.Login
 
 }
 

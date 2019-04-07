@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 type InstanceCmdArgs struct {
@@ -25,6 +26,7 @@ type Args struct {
 	InstanceCmdArgs
 	Login
 	LogLevel string
+	Projects string
 }
 
 type CmdAction string
@@ -67,6 +69,8 @@ func Load() {
 	sshCommand.IntVar(&args.Limit, "limit", 0, "limit number of instances to add")
 	sshCommand.StringVar(&args.User, "user", defaultUser, "username to add ssh key, if empty $USER will be taken")
 	instanceCommand.StringVar(&args.Login.User, "user", defaultUser, "username for ssh")
+	sshCommand.StringVar(&args.Projects, "projects", "", "projects to search for as comma seperated values: proj1,proj2,lastproject (project id)")
+	instanceCommand.StringVar(&args.Projects, "projects", "", "projects to search for as comma seperated values: proj1,proj2,lastproject (project id)")
 
 	flag.Parse()
 	//sshCommand.SetOutput(ioutil.Discard)
@@ -119,3 +123,9 @@ func GetArgs() Args                       { return args }
 func GetActionName() CmdAction            { return cmdAction }
 func GetDBFileName() string               { return args.DBFile }
 func LogLevel() string                    { return args.LogLevel }
+func Projects() []string {
+	if args.Projects != "" {
+		return strings.Split(args.Projects, ",")
+	}
+	return []string{}
+}

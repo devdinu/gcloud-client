@@ -12,10 +12,11 @@ import (
 type InstanceLogin struct {
 	ctx context.Context
 	f   finder
+	lister
 }
 
 func (il InstanceLogin) Login(c gcloud.Client, args config.Args) error {
-	projs, err := listProjects(il.ctx, c)
+	projs, err := il.lister.Projects(il.ctx, c)
 	if err != nil {
 		return err
 	}
@@ -37,8 +38,4 @@ func (il InstanceLogin) Login(c gcloud.Client, args config.Args) error {
 	tmuxCfg.AddArg("user", args.Login.User)
 	_, err = c.Login(il.ctx, insts, "hostname", tmuxCfg)
 	return err
-}
-
-func NewLogin(ctx context.Context, f finder) InstanceLogin {
-	return InstanceLogin{ctx: ctx, f: f}
 }

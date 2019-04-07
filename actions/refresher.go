@@ -20,6 +20,7 @@ type dbStore interface {
 type Refresher struct {
 	ctx   context.Context
 	store dbStore
+	lister
 }
 
 func (r Refresher) RefreshInstances(c gcloud.Client, cfg config.Args) error {
@@ -32,25 +33,13 @@ func (r Refresher) RefreshInstances(c gcloud.Client, cfg config.Args) error {
 	return err
 }
 
-func listProjects(ctx context.Context, c gcloud.Client) (gcloud.Projects, error) {
-	args := config.GetArgs()
-	cmdCfg := command.Config{Zone: args.Zone, Limit: args.Limit, Format: args.Format}
-	projs, err := c.ListProjects(cmdCfg)
-	if err != nil {
-		logger.Infof("[Instances] list projects failed with error %v", err)
-		return nil, err
-	}
-	return gcloud.Projects(projs), nil
-}
-
 func (r Refresher) refreshProjects(ctx context.Context, c gcloud.Client) error {
 	var lwg sync.WaitGroup
 	//TODO: replace the chunk with listprojects
 	args := config.GetArgs()
 	cmdCfg := command.Config{Zone: args.Zone, Limit: args.Limit, Format: args.Format}
-	projs, err := c.ListProjects(cmdCfg)
+	projs, err := r.lister.Projects(ctx, c)
 	if err != nil {
-		logger.Errorf("[Instances] list projects failed with error %v", err)
 		return err
 	}
 	lwg.Add(len(projs))
