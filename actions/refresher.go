@@ -68,12 +68,12 @@ func (r Refresher) getInstancesForProject(ctx context.Context, c gcloud.Client, 
 	totalStoreConcurrency := 10
 	lwg.Add(totalStoreConcurrency)
 	for i := 0; i < totalStoreConcurrency; i++ {
-		go func() {
+		go func(id int) {
 			if err := r.store.Save(ctx, instances, &lwg); err != nil {
 				logger.Errorf("[Refresh] error storing instance: %v", err)
 			}
-			logger.Infof("[Refresh] stored all instances")
-		}()
+			logger.Infof("[Refresh] goroutine :%d completed", id)
+		}(i)
 	}
 	for _, i := range insts {
 		i.Project = pr.ProjectID
@@ -82,6 +82,7 @@ func (r Refresher) getInstancesForProject(ctx context.Context, c gcloud.Client, 
 			return errors.New("Error storing instance: " + err.Error())
 		}
 	}
+	logger.Debugf("[Refresher] Got instances size: %d, writing with concurrency: %d chan:%d", len(insts), totalStoreConcurrency, len(instances))
 	close(instances)
 	lwg.Wait()
 	return nil

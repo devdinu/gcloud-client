@@ -35,18 +35,25 @@ func (db DB) Save(ctx context.Context, instances <-chan gcloud.Instance, wg *syn
 	var batchInsts []gcloud.Instance
 	for inst := range instances {
 		batchInsts = append(batchInsts, inst)
-		if len(batchInsts) >= 50 {
-			db.updateBatch(batchInsts)
+		//TODO: make batch size configurable
+		if len(batchInsts) >= 100 {
+			err := db.updateBatch(batchInsts)
+			if err != nil {
+				return err
+			}
+			logger.Debugf("[DB] Written batch of size:%d\n", len(batchInsts))
 			batchInsts = []gcloud.Instance{}
 		}
 	}
-	db.updateBatch(batchInsts)
-	return nil
+	return db.updateBatch(batchInsts)
 }
 
 func (db DB) updateBatch(instances []gcloud.Instance) error {
-	err := db.Update(func(tx *bolt.Tx) error {
-		for _, inst := range instances {
+	if len(instances) <= 0 {
+		return nil
+	}
+	for _, inst := range instances {
+		err := db.Batch(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte(inst.Project))
 			if b == nil {
 				return fmt.Errorf("[DB] save instances failed for bucket %s inst: %+v", inst.Project, inst)
@@ -57,10 +64,12 @@ func (db DB) updateBatch(instances []gcloud.Instance) error {
 			}
 			logger.Debugf("[DB] storing instance %s into bucket: %s", inst.Name, inst.Project)
 			return b.Put([]byte(inst.Name), data.Bytes())
+		})
+		if err != nil {
+			return err
 		}
-		return nil
-	})
-	return err
+	}
+	return nil
 }
 
 type KeyVals map[string][]byte
