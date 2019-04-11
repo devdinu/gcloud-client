@@ -34,6 +34,8 @@ You could customize the flags
 - `--filter` regexp to filter the instances while listing. uses gcloud `filter=name~'regex'`
 - `--user` username to which your ssh key is added for, defaults to `$USER`
 - `--ssh_key` ssh_key file to be uploaded, defaults to `$HOME/.ssh/id_rsa.pub`
+- `--dbfile` file to store the instances and search, defaults to `$HOME/hosts.db`
+- `--projects` list of project-ids to search for while login, or to refresh
 
 
 ```
@@ -53,6 +55,8 @@ gcloud-client --instance=some_instance --zone=asia-zone
 globals flags:
 timeout
 
+if you've installed via homebrew, use `gcl` instead of `gcloud-client`
+
 ```
 gcloud-client ssh grant --key=someone-key.pub --prefix=
 gcloud-ciient ssh revoke --name=someone --prefix= # Unimplemented
@@ -64,10 +68,9 @@ gcloud-client instances refresh --timeout
 gcloud-client instances list --project=specific-project  # WIP
 
 // ssh
-gcloud-client instances ssh --prefix some-prefix --user username --session session_name
-gcloud-client instances ssh --regex some-prefix # WIP
-gcloud-client instances ssh --tag some-prefix   # WIP
- 
+gcloud-client instances login --prefix some-prefix --user username --session session_name
+gcloud-client instances login --regex some-prefix # WIP
+gcloud-client instances login --tag some-prefix   # WIP
 ```
 
 

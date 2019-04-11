@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/devdinu/gcloud-client/logger"
 )
 
 type InstanceCmdArgs struct {
@@ -39,17 +41,24 @@ const SearchPrefix CmdAction = "prefix_search"
 var args Args
 var cmdAction CmdAction
 
-func Load() {
+func MustLoad() {
 	var instanceArgs InstanceCmdArgs
+	configDir := os.Getenv("HOME") + string(os.PathSeparator) + ".config" + string(os.PathSeparator) + "gcloud-client"
+	configFile := configDir + string(os.PathSeparator) + "config.json"
 
 	sshCommand := flag.NewFlagSet("ssh_access", flag.ContinueOnError)
 	instanceCommand := flag.NewFlagSet("instances", flag.ContinueOnError)
+	flag.StringVar(&configFile, "config", configFile, "configuration to load for gcl")
 
-	defaultSSHFile := os.Getenv("HOME") + "/.ssh/id_rsa.pub"
-	defaultUser := os.Getenv("USER")
-	defaultDBFile := os.Getenv("HOME") + "/hosts.db"
+	//TODO: override with env "GCL_CONFIG_DIR"
+	flag.Parse()
 
-	sshCommand.StringVar(&args.SSHFile, "ssh_key", defaultSSHFile, "new SSH Key file which have to be added to instances")
+	defaultCfg, err := loadDefaults(configFile)
+	if err != nil {
+		log.Fatalf("couldn't load default config, err: %s", err)
+	}
+
+	sshCommand.StringVar(&args.SSHFile, "ssh_key", defaultCfg.SSHFile, "new SSH Key file which have to be added to instances")
 	sshCommand.StringVar(&args.Filter, "filter", "", "regexp to filter instances")
 	sshCommand.StringVar(&args.InstanceName, "instance", "", "instance to add ssh key, take precedence over the regex filter, would require zone")
 	sshCommand.BoolVar(&args.AddHosts, "add_hosts", false, "to add ip host mappings in /etc/hosts")
@@ -61,30 +70,34 @@ func Load() {
 	instanceCommand.StringVar(&instanceArgs.Prefix, "regex", "", "search instances by regex")
 	instanceCommand.StringVar(&args.Login.Session, "session", "login-session", "login sesssion name")
 
-	sshCommand.StringVar(&args.DBFile, "dbfile", defaultDBFile, "db file to store data")
-	instanceCommand.StringVar(&args.DBFile, "dbfile", defaultDBFile, "db file to store data")
-	instanceCommand.StringVar(&args.LogLevel, "level", "info", "log level [info/debug/all]")
-	sshCommand.StringVar(&args.LogLevel, "level", "info", "log level [info/debug/all]")
+	sshCommand.StringVar(&args.DBFile, "dbfile", defaultCfg.DBFile, "db file to store data")
+	instanceCommand.StringVar(&args.DBFile, "dbfile", defaultCfg.DBFile, "db file to store data")
+	instanceCommand.StringVar(&args.LogLevel, "level", defaultCfg.LogLevel, "log level [info/debug/all]")
+	sshCommand.StringVar(&args.LogLevel, "level", defaultCfg.LogLevel, "log level [info/debug/all]")
 	instanceCommand.IntVar(&args.Limit, "limit", 0, "limit number of instances to search")
-	sshCommand.IntVar(&args.Limit, "limit", 0, "limit number of instances to add")
-	sshCommand.StringVar(&args.User, "user", defaultUser, "username to add ssh key, if empty $USER will be taken")
-	instanceCommand.StringVar(&args.Login.User, "user", defaultUser, "username for ssh")
+	sshCommand.IntVar(&args.Limit, "limit", 0, "limit number of instancddefaultDBFilees to add")
+	sshCommand.StringVar(&args.User, "user", defaultCfg.User, "username to add ssh key, if empty $USER will be taken")
+	instanceCommand.StringVar(&args.Login.User, "user", defaultCfg.User, "username for ssh")
 	sshCommand.StringVar(&args.Projects, "projects", "", "projects to search for as comma seperated values: proj1,proj2,lastproject (project id)")
 	instanceCommand.StringVar(&args.Projects, "projects", "", "projects to search for as comma seperated values: proj1,proj2,lastproject (project id)")
 
-	flag.Parse()
 	//sshCommand.SetOutput(ioutil.Discard)
 	//instanceCommand.SetOutput(ioutil.Discard)
 
 	if len(os.Args) >= 2 {
 		if os.Args[1] == "ssh_access" || os.Args[1] == "" {
 			if err := sshCommand.Parse(os.Args[2:]); err != nil {
+				sshCommand.Usage()
 				log.Fatalf("[Config] Error defining ssh access command %v", err)
+			}
+			if args.Filter == "" && args.InstanceName == "" {
+				log.Fatalf("[Config] mention instances search filter for access")
 			}
 			cmdAction = SshAccess
 		} else if os.Args[1] == "instances" {
 			if len(os.Args) < 3 {
-				log.Fatalf("[Config] Error defining ssh access command no action mentioned")
+				instanceCommand.Usage()
+				log.Fatalf("[Config] Error defining instances command, no action mentioned")
 			}
 			switch os.Args[2] {
 			case "search":
@@ -108,21 +121,33 @@ func Load() {
 				cmdAction = LoginInstances
 			default:
 				fmt.Println("[Config] no matching commands mentioned")
-				flag.Usage()
+				instanceCommand.Usage()
 			}
 		}
+	}
+	if cmdAction == "" {
+		flag.Usage()
+		sshCommand.Usage()
+		instanceCommand.Usage()
+		log.Fatalf("Try again with proper command")
 	}
 
 	args.InstanceCmdArgs = instanceArgs
 	args.Format = "json"
-	fmt.Printf("action %s args: %+v \ncmd args: %v\n", cmdAction, args, os.Args)
+	logger.Debugf("action %s args: %+v \ncmd args: %v", cmdAction, args, os.Args)
 }
 
 func GetInstanceCmdArgs() InstanceCmdArgs { return args.InstanceCmdArgs }
 func GetArgs() Args                       { return args }
 func GetActionName() CmdAction            { return cmdAction }
 func GetDBFileName() string               { return args.DBFile }
-func LogLevel() string                    { return args.LogLevel }
+
+func LogLevel() string {
+	if args.LogLevel == "" {
+		return "debug"
+	}
+	return strings.ToLower(args.LogLevel)
+}
 func Projects() []string {
 	if args.Projects != "" {
 		return strings.Split(args.Projects, ",")

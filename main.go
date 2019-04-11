@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
-	"os"
 
 	action "github.com/devdinu/gcloud-client/actions"
 	"github.com/devdinu/gcloud-client/command"
@@ -15,11 +13,8 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		flag.Usage()
-		return
-	}
-	config.Load()
+	config.MustLoad()
+	logger.SetLevel(config.LogLevel())
 	args := config.GetArgs()
 
 	c := gcloud.NewClient(command.Executor{})
