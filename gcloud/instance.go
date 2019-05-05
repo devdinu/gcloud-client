@@ -1,6 +1,7 @@
 package gcloud
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -11,6 +12,14 @@ type Instance struct {
 	NetworkInterfaces []NetworkInterface `json:"networkInterfaces"`
 	Status            string             `json:"status"`
 	Project           string             `json:"projectID"`
+}
+
+func (ins Instance) String() string {
+	res := fmt.Sprintf("%-30s : %-50s %-10s", ins.Project, ins.Name, ins.IP())
+	if ins.ExternalIP() != "" {
+		return fmt.Sprintf("%s External: %s", res, ins.ExternalIP())
+	}
+	return res
 }
 
 func (i Instance) IP() string {

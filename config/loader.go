@@ -17,8 +17,9 @@ type InstanceCmdArgs struct {
 }
 
 type Login struct {
-	Session string
-	User    string
+	Session      string
+	User         string
+	TemplatesDir string
 }
 
 type Args struct {
@@ -71,6 +72,7 @@ func MustLoad() {
 	instanceCommand.StringVar(&instanceArgs.Prefix, "prefix", "", "search instances by common prefix")
 	instanceCommand.StringVar(&instanceArgs.Regex, "regex", "", "search instances by regex")
 	instanceCommand.StringVar(&args.Login.Session, "session", "login-session", "login sesssion name")
+	instanceCommand.StringVar(&args.Login.TemplatesDir, "templates", defaultCfg.TemplatesDir, "templates directory for tmuxinator")
 
 	sshCommand.StringVar(&args.DBFile, "dbfile", defaultCfg.DBFile, "db file to store data")
 	instanceCommand.StringVar(&args.DBFile, "dbfile", defaultCfg.DBFile, "db file to store data")

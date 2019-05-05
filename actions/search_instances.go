@@ -28,7 +28,7 @@ func (s searcher) SearchInstancesPrefix(c gcloud.Client, args config.Args) error
 	}
 	logger.Infof("Search By Prefix Result: ")
 	for _, ins := range insts {
-		logger.Infof("%s: name: %s\tip: %s external ip: %s\t", ins.Project, ins.Name, ins.IP(), ins.ExternalIP())
+		logger.Infof("%s", ins)
 	}
 	return nil
 }
@@ -45,7 +45,7 @@ func (s searcher) SearchInstancesRegex(c gcloud.Client, args config.Args) error 
 	}
 	logger.Infof("Search By Regex Result: ")
 	for _, ins := range insts {
-		logger.Infof("%s: name: %s\tip: %s external ip: %s\t", ins.Project, ins.Name, ins.IP(), ins.ExternalIP())
+		logger.Infof("%s", ins)
 	}
 	return nil
 }
