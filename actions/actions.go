@@ -23,6 +23,7 @@ func MapActions(ctx context.Context, db store.DB) {
 	actions[config.SshAccess] = AddSSHKeys
 	actions[config.RefreshInstances] = Refresher{ctx: ctx, store: db}.RefreshInstances
 	actions[config.SearchPrefix] = srch.SearchInstancesPrefix
+	actions[config.SearchRegex] = srch.SearchInstancesRegex
 	actions[config.LoginInstances] = login.Login
 
 }

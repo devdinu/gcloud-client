@@ -34,8 +34,7 @@ func (db DB) Save(ctx context.Context, instances <-chan gcloud.Instance, wg *syn
 
 	var batchInsts []gcloud.Instance
 	for inst := range instances {
-		batchInsts = append(batchInsts, inst)
-		//TODO: make batch size configurable
+		batchInsts = append(batchInsts, inst) //TODO: make batch size configurable
 		if len(batchInsts) >= 100 {
 			err := db.updateBatch(batchInsts)
 			if err != nil {
@@ -91,25 +90,28 @@ func (db DB) Write(ctx context.Context, bucket string, data KeyVals) error {
 	return nil
 }
 
-func (db DB) Search(ctx context.Context, projs []string, pattern string) ([]gcloud.Instance, error) {
+func (db DB) Search(ctx context.Context, projs []string, matches Predicate) ([]gcloud.Instance, error) {
 	var insts []gcloud.Instance
 
 	for _, proj := range projs {
-		logger.Debugf("[PrefixSearch] searching project: %s pattern: %s", proj, pattern)
+		logger.Debugf("[Search] searching project: %s", proj)
 		err := db.View(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte(proj))
 			if b == nil {
 				return fmt.Errorf("Bucket not found for project %s", proj)
 			}
 			c := b.Cursor()
-			for k, v := c.Seek([]byte(pattern)); k != nil && bytes.HasPrefix(k, []byte(pattern)); k, v = c.Next() {
+			for k, v := c.First(); k != nil; k, v = c.Next() {
+				if !matches(k) {
+					continue
+				}
 				var data bytes.Buffer
 				var found gcloud.Instance
 				err := gob.NewDecoder(bytes.NewBuffer(v)).Decode(&found)
 				if err != nil {
 					return err
 				}
-				logger.Debugf("[PrefixSearch] found: %s %v", string(k), data.String())
+				logger.Debugf("[Search] found: %s %v", string(k), data.String())
 				insts = append(insts, found)
 			}
 			return nil

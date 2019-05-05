@@ -12,6 +12,7 @@ import (
 
 type InstanceCmdArgs struct {
 	Prefix  string
+	Regex   string
 	Refresh bool
 }
 
@@ -37,6 +38,7 @@ const SshAccess CmdAction = "ssh_access"
 const RefreshInstances CmdAction = "refresh"
 const LoginInstances CmdAction = "login"
 const SearchPrefix CmdAction = "prefix_search"
+const SearchRegex CmdAction = "regex_search"
 
 var args Args
 var cmdAction CmdAction
@@ -67,7 +69,7 @@ func MustLoad() {
 	// refresh should be subcommand and not as flag
 	instanceCommand.BoolVar(&instanceArgs.Refresh, "refresh", true, "refresh instances list in store")
 	instanceCommand.StringVar(&instanceArgs.Prefix, "prefix", "", "search instances by common prefix")
-	instanceCommand.StringVar(&instanceArgs.Prefix, "regex", "", "search instances by regex")
+	instanceCommand.StringVar(&instanceArgs.Regex, "regex", "", "search instances by regex")
 	instanceCommand.StringVar(&args.Login.Session, "session", "login-session", "login sesssion name")
 
 	sshCommand.StringVar(&args.DBFile, "dbfile", defaultCfg.DBFile, "db file to store data")
@@ -105,7 +107,9 @@ func MustLoad() {
 					log.Fatalf("[Config] Error defining instances command %v", err)
 				}
 				if instanceCommand.Parsed() {
-					if instanceArgs.Prefix != "" {
+					if instanceArgs.Regex != "" {
+						cmdAction = SearchRegex
+					} else if instanceArgs.Prefix != "" {
 						cmdAction = SearchPrefix
 					}
 				}

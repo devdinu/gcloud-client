@@ -7,6 +7,7 @@ import (
 	"github.com/devdinu/gcloud-client/config"
 	"github.com/devdinu/gcloud-client/gcloud"
 	"github.com/devdinu/gcloud-client/logger"
+	"github.com/devdinu/gcloud-client/store"
 )
 
 type InstanceLogin struct {
@@ -15,6 +16,7 @@ type InstanceLogin struct {
 	lister
 }
 
+//TODO: login could be done as search instances and login, otherwise display
 func (il InstanceLogin) Login(c gcloud.Client, args config.Args) error {
 	projs, err := il.lister.Projects(il.ctx, c)
 	if err != nil {
@@ -22,7 +24,8 @@ func (il InstanceLogin) Login(c gcloud.Client, args config.Args) error {
 	}
 	pattern := args.InstanceCmdArgs.Prefix
 	//TODO: override with commandline projects to reduce search space
-	insts, err := il.f.Search(il.ctx, projs.Names(), pattern)
+	// use regex match if available
+	insts, err := il.f.Search(il.ctx, projs.Names(), store.PrefixMatcher(pattern))
 	if err != nil {
 		logger.Errorf("[Search] couldn't search instances with prefix %s err: %v", pattern, err)
 		return err
