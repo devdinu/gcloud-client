@@ -72,7 +72,7 @@ func (r Refresher) getInstancesForProject(ctx context.Context, c gcloud.Client, 
 			if err := r.store.Save(ctx, instances, &lwg); err != nil {
 				logger.Errorf("[Refresh] error storing instance: %v", err)
 			}
-			logger.Infof("[Refresh] goroutine :%d completed", id)
+			logger.Debugf("[Refresh] goroutine :%d completed", id)
 		}(i)
 	}
 	for _, i := range insts {

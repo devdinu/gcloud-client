@@ -29,7 +29,7 @@ func (il InstanceLogin) Login(c gcloud.Client, args config.Args) error {
 	}
 	logger.Infof("Search By Prefix Result: ")
 	for _, ins := range insts {
-		logger.Infof("%s: name: %s\tip: %s\t", ins.Project, ins.Name, ins.IP())
+		logger.Infof("%s: name: %s\tip: %s external: %s\t", ins.Project, ins.Name, ins.IP())
 	}
 	tmuxCfg := command.TmuxConfig{
 		Project: "ssh_instances_pane_cmd",

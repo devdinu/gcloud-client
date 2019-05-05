@@ -50,6 +50,12 @@
         "network": "https://www.googleapis.com/compute/v1/projects/some-cluster/global/networks/default",
         "networkIP": "10.11.12.13",
         "subnetwork": "https://www.googleapis.com/compute/v1/projects/some-cluster/regions/somezone/subnetworks/default-subnet"
+        "accessConfigs": [
+            {
+                "name": "external-nat",
+                "natIP": "12.34.56.78"
+            }
+        ]
       }
     ],
     "scheduling": {

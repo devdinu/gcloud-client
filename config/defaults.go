@@ -4,17 +4,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/devdinu/gcloud-client/logger"
 )
 
 type Defaults struct {
-	User     string `json:"user"`
-	DBFile   string `json:"db_file"`
-	SSHFile  string `json:"ssh_key"`
-	LogLevel string `json:"log_level"`
+	User         string `json:"user"`
+	DBFile       string `json:"db_file"`
+	SSHFile      string `json:"ssh_key"`
+	LogLevel     string `json:"log_level"`
+	TemplatesDir string `json:"templates_dir"`
 }
 
 var conf Defaults
@@ -24,12 +27,14 @@ func loadDefaults(configFile string) (*Defaults, error) {
 	if configFile == "" {
 		return nil, errors.New("No configuration file mentioned")
 	}
+
 	configDir := filepath.Dir(configFile)
 	appConfig := Defaults{
-		User:     os.Getenv("USER"),
-		SSHFile:  homeDir + string(os.PathSeparator) + "ssh" + string(os.PathSeparator) + "id_rsa.pub",
-		DBFile:   configDir + string(os.PathSeparator) + "hosts.db",
-		LogLevel: "info",
+		User:         os.Getenv("USER"),
+		SSHFile:      homeDir + string(os.PathSeparator) + "ssh" + string(os.PathSeparator) + "id_rsa.pub",
+		DBFile:       configDir + string(os.PathSeparator) + "hosts.db",
+		TemplatesDir: getTemplatesDir(),
+		LogLevel:     "info",
 	}
 
 	if _, err := os.Stat(configFile); err != nil {
@@ -53,7 +58,7 @@ func loadDefaults(configFile string) (*Defaults, error) {
 			return nil, fmt.Errorf("reading config file %s failed with error %v", configFile, err)
 		}
 	}
-	logger.Debugf("[Config] Loaded default config: %v from file %s", appConfig, configFile)
+	logger.Debugf("[Config] Loaded default config: %+v from file %s", appConfig, configFile)
 
 	return &appConfig, nil
 }
@@ -73,4 +78,19 @@ func setDefaultConfig(configFile string, appConfig Defaults) error {
 	}
 	logger.Infof("[Config] created default configuration %s", configFile)
 	return nil
+}
+
+func getTemplatesDir() string {
+	defaultTemplatesDir := strings.Join([]string{os.Getenv("HOME"), ".config", "tmuxinator"}, string(os.PathSeparator))
+	templatesDir := strings.Join([]string{"/usr", "local", "Cellar", "gcloud-client"}, string(os.PathSeparator))
+	files, err := ioutil.ReadDir(templatesDir)
+	if err != nil {
+		logger.Debugf("[Config] Couldn't figure out brew cellar directory for templates: %v", err)
+	}
+	for _, f := range files {
+		if strings.HasSuffix(f.Name(), ".yml") {
+			return templatesDir
+		}
+	}
+	return defaultTemplatesDir
 }

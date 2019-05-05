@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -18,7 +19,8 @@ func (cmd *tmux) Args() []string {
 }
 
 func (cmd *tmux) startCommand() string {
-	return fmt.Sprintf(`start %s cmd="%s" hosts=%s session_name=%s %s`, cmd.Project, cmd.cmd, strings.Join(cmd.hosts, ","), cmd.TmuxConfig.SessionName(), strings.Join(cmd.TmuxConfig.Flags(), " "))
+	return fmt.Sprintf(`start %s -p %s -n %s cmd="%s" hosts=%s session_name=%s %s`,
+		cmd.Project, cmd.TmuxConfig.TemplateFile(), cmd.TmuxConfig.SessionName(), cmd.cmd, strings.Join(cmd.hosts, ","), cmd.TmuxConfig.SessionName(), strings.Join(cmd.TmuxConfig.Flags(), " "))
 }
 
 func (cmd *tmux) String() string {
@@ -26,11 +28,12 @@ func (cmd *tmux) String() string {
 }
 
 type TmuxConfig struct {
-	Session string
-	user    string
-	cmd     string
-	Project string
-	keyVals map[string]string
+	TemplatesDir string
+	Session      string
+	user         string
+	cmd          string
+	Project      string
+	keyVals      map[string]string
 }
 
 func (c *TmuxConfig) AddArg(key, val string) {
@@ -45,6 +48,10 @@ func (c *TmuxConfig) SessionName() string {
 		return c.Session
 	}
 	return "default-sesion"
+}
+
+func (c *TmuxConfig) TemplateFile() string {
+	return c.TemplatesDir + string(os.PathSeparator) + c.Project + ".yml"
 }
 
 func (c *TmuxConfig) Flags() []string {

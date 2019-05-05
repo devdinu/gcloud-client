@@ -63,7 +63,7 @@ gcloud-ciient ssh revoke --name=someone --prefix= # Unimplemented
 
 // searching
 gcloud-client instances search --prefix vm-prefix-to-search --project=project
-gcloud-client instances search --regex some.*regex
+gcloud-client instances search --regex some.*regex # WIP
 gcloud-client instances refresh --timeout
 gcloud-client instances list --project=specific-project  # WIP
 
@@ -74,8 +74,7 @@ gcloud-client instances login --tag some-prefix   # WIP
 ```
 
 
-Todo:
-* [ ] Use absolute path (sensible default) for db file & configs if required
+App:
 * [ ] Setup script to install gcl and tmuxinator template and tmuxinator if needed (2.7)
 * [ ] CI to build binary
 * [X] enable os.Stdin in cmd.execute
@@ -93,12 +92,16 @@ SEARCH
     * [X] used goroutines for each project with multiple workers
     * [ ] Write benchmark
 * [ ] List projects to use cache
-* [ ] Override projects from cmdline
+* [X] Override projects from cmdline
 
 CODE/FEATURES
 * [X] use logger package
 * [X] Define a list of global flags
 * [ ] Add gci command to do ls, switch projects
+* [ ] Basic Tagging
+
+SIMPLICITY
+* [X] use default configuration file, so no need to mention in cmdline
 
 Maybe Laaaaater.
 * [ ] Use knife tags to tag instances than manual

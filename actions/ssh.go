@@ -17,6 +17,9 @@ func AddSSHKeys(c gcloud.Client, args config.Args) error {
 	if args.InstanceName == "" || args.Zone == "" {
 		var err error
 		cfg := command.Config{Zone: args.Zone, Format: args.Format, Filter: args.Filter}
+		if args.Projects != "" {
+			cfg.Project = config.Projects()[0]
+		}
 		insts, err = c.GetInstances(cfg)
 		if err != nil {
 			fmt.Println(fmt.Errorf("get instances errored %v", err))
@@ -27,6 +30,9 @@ func AddSSHKeys(c gcloud.Client, args config.Args) error {
 	}
 	for _, inst := range insts {
 		conf := command.Config{Format: args.Format, Zone: inst.Zone}
+		if args.Projects != "" {
+			conf.Project = config.Projects()[0]
+		}
 		desc, err := c.GetDescription(inst.Name, conf)
 		if err != nil {
 			fmt.Println(fmt.Errorf("describe instance errored %v", err))

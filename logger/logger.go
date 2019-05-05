@@ -40,6 +40,6 @@ func Warnf(format string, args ...interface{}) {
 	}
 }
 
-func SetLevel(level string) {
-	level = level
+func SetLevel(lev string) {
+	level = lev
 }

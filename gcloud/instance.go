@@ -20,8 +20,22 @@ func (i Instance) IP() string {
 	return i.NetworkInterfaces[0].NetworkIP
 }
 
+func (i Instance) ExternalIP() string {
+	if len(i.NetworkInterfaces) > 0 &&
+		len(i.NetworkInterfaces[0].AccessConfigs) > 0 {
+		return i.NetworkInterfaces[0].AccessConfigs[0].NatIP
+	}
+	return ""
+}
+
 type NetworkInterface struct {
-	NetworkIP string `json:"networkIP"`
+	NetworkIP     string `json:"networkIP"`
+	AccessConfigs []AccessConfig
+}
+
+type AccessConfig struct {
+	NatIP string `natIP`
+	Name  string `name`
 }
 
 func createTempFile(keys []SSHKey) (*os.File, error) {
