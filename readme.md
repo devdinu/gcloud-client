@@ -1,4 +1,5 @@
 # gcloud client
+[![Go Report Card](https://goreportcard.com/badge/github.com/devdinu/gcloud-client)](https://goreportcard.com/report/github.com/devdinu/gcloud-client)
 
  scripts to do things which you wish google console client does.
 
@@ -7,7 +8,7 @@
 ### Required libs
 - [gcloud](https://cloud.google.com/sdk/gcloud) authenticated with projects and config set
 - [tmux](https://github.com/tmux/tmux)
-- [tmuxinator](https://github.com/tmuxinator/tmuxinator)
+- [tmuxinator](https://github.com/tmuxinator/tmuxinator) gem
 
 ### Go
 `go get -u github.com/devdinu/gcloud-client`
@@ -15,8 +16,19 @@
 ### Homebrew
 `brew install devdinu/devlife/gcloud-client`
 
+If you've installed with brew, command will be `gcl`, might need to remove alias from git plugin of oh-my-zsh `~/.oh-my-zsh/plugins/git/git.plugin.zsh`
 
 ## Usage
+
+### Refresh
+all instances, which's stored in boltd
+- `gcloud-client instances refresh`
+
+optionally you can pass flag `--projects proj1,proj2` to refresh specific projects
+You could add the refresh as cron
+
+### Search
+
 - `gcloud-client --help` to show the help with flag information
 
 ## Add SSH key to compute instances
