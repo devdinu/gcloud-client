@@ -27,6 +27,8 @@ all instances, which's stored in boltd
 optionally you can pass flag `--projects proj1,proj2` to refresh specific projects
 You could add the refresh as cron
 
+![Demo](https://raw.githubusercontent.com/devdinu/gcloud-client/master/demo/refresh-demo.gif)
+
 ### Search
 
 - `gcloud-client --help` to show the help with flag information
