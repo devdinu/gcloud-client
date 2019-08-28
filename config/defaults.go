@@ -31,7 +31,7 @@ func loadDefaults(configFile string) (*Defaults, error) {
 	configDir := filepath.Dir(configFile)
 	appConfig := Defaults{
 		User:         os.Getenv("USER"),
-		SSHFile:      homeDir + string(os.PathSeparator) + "ssh" + string(os.PathSeparator) + "id_rsa.pub",
+		SSHFile:      homeDir + string(os.PathSeparator) + ".ssh" + string(os.PathSeparator) + "id_rsa.pub",
 		DBFile:       configDir + string(os.PathSeparator) + "hosts.db",
 		TemplatesDir: getTemplatesDir(),
 		LogLevel:     "info",
