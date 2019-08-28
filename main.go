@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	action "github.com/devdinu/gcloud-client/actions"
 	"github.com/devdinu/gcloud-client/command"
@@ -15,6 +16,7 @@ import (
 func main() {
 	config.MustLoad()
 	logger.SetLevel(config.LogLevel())
+	logger.SetOutput(os.Stdout)
 	args := config.GetArgs()
 
 	c := gcloud.NewClient(command.Executor{})

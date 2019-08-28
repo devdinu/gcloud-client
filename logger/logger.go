@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"io"
 	"log"
 )
 
@@ -42,4 +43,8 @@ func Warnf(format string, args ...interface{}) {
 
 func SetLevel(lev string) {
 	level = lev
+}
+
+func SetOutput(out io.Writer) {
+	log.SetOutput(out)
 }

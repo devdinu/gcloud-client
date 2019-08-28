@@ -6,8 +6,6 @@ import (
 	"log"
 	"os"
 	"strings"
-
-	"github.com/devdinu/gcloud-client/logger"
 )
 
 type InstanceCmdArgs struct {
@@ -140,7 +138,6 @@ func MustLoad() {
 
 	args.InstanceCmdArgs = instanceArgs
 	args.Format = "json"
-	logger.Debugf("action %s args: %+v \ncmd args: %v", cmdAction, args, os.Args)
 }
 
 func GetInstanceCmdArgs() InstanceCmdArgs { return args.InstanceCmdArgs }
