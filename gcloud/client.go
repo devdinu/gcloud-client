@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -30,7 +31,7 @@ func (c Client) GetInstances(cfg command.Config) ([]Instance, error) {
 	var insts []Instance
 	err = json.NewDecoder(out).Decode(&insts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("[Client] decoding error: %v", err)
 	}
 	return insts, nil
 }

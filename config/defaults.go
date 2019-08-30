@@ -58,8 +58,6 @@ func loadDefaults(configFile string) (*Defaults, error) {
 			return nil, fmt.Errorf("reading config file %s failed with error %v", configFile, err)
 		}
 	}
-	logger.Debugf("[Config] Loaded default config: %+v from file %s", appConfig, configFile)
-
 	return &appConfig, nil
 }
 
