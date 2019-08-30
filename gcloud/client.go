@@ -21,8 +21,8 @@ type Client struct {
 	executor
 }
 
-//TODO: get project name as arg
 func (c Client) GetInstances(cfg command.Config) ([]Instance, error) {
+	// TODO: get project name as arg
 	giCmd := command.GetInstancesCmd(cfg)
 	out, err := c.Execute(giCmd)
 	if err != nil {
@@ -36,8 +36,8 @@ func (c Client) GetInstances(cfg command.Config) ([]Instance, error) {
 	return insts, nil
 }
 
-//TODO: move this to instance
 func (c Client) GetDescription(inst string, cfg command.Config) (Description, error) {
+	//TODO: move this to instance
 	out, err := c.Execute(command.DescribeCmd(inst, cfg))
 	if err != nil {
 		return Description{}, err
@@ -79,8 +79,8 @@ func (c Client) ListProjects(cfg command.Config) ([]Project, error) {
 	return projects, err
 }
 
-//TODO: move to separate as it doesn't deal with gcloud
 func (c Client) Login(ctx context.Context, insts []Instance, cmd string, cfg command.TmuxConfig) (string, error) {
+	//TODO: move to separate as it doesn't deal with gcloud
 	var hosts []string
 	for _, inst := range insts {
 		if inst.Status != "RUNNING" {

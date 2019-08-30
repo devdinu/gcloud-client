@@ -32,10 +32,13 @@ type SearchSuite struct {
 
 func (s *SearchSuite) TestSetup() {
 	logger.SetLevel("error")
-	s.ctx, _ = context.WithTimeout(context.Background(), time.Second*3)
+	var canc context.CancelFunc
+	s.ctx, canc = context.WithTimeout(context.Background(), time.Second*3)
+	defer canc()
 	t := s.T()
 	var err error
-	s.db, err = store.NewDB("./testdata/search.db")
+	//TODOL should create the file and delete in teardown
+	s.db, err = store.NewDB("../testdata/search.db")
 	s.bucket = "search-instances"
 	s.instances = []gcloud.Instance{
 		{Name: "integration-01"},

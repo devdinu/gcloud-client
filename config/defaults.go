@@ -46,17 +46,16 @@ func loadDefaults(configFile string) (*Defaults, error) {
 			return nil, err
 		}
 		return &appConfig, err
-	} else {
-		f, err := os.Open(configFile)
-		if err != nil {
-			return nil, fmt.Errorf("config file %s open failed with error %v", configFile, err)
-		}
+	}
+	f, err := os.Open(configFile)
+	if err != nil {
+		return nil, fmt.Errorf("config file %s open failed with error %v", configFile, err)
+	}
 
-		err = json.NewDecoder(f).Decode(&appConfig)
-		if err != nil {
-			logger.Debugf("Try removing config file %s", configFile)
-			return nil, fmt.Errorf("reading config file %s failed with error %v", configFile, err)
-		}
+	err = json.NewDecoder(f).Decode(&appConfig)
+	if err != nil {
+		logger.Debugf("Try removing config file %s", configFile)
+		return nil, fmt.Errorf("reading config file %s failed with error %v", configFile, err)
 	}
 	return &appConfig, nil
 }

@@ -17,7 +17,6 @@ type InstanceLogin struct {
 	lister
 }
 
-//TODO: login could be done as search instances and login, otherwise display
 func (il InstanceLogin) Login(c gcloud.Client, args config.Args) error {
 	projs, err := il.lister.Projects(il.ctx, c)
 	if err != nil {

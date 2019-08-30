@@ -11,7 +11,7 @@ type Description struct {
 	Metadata `json:"metadata"`
 }
 
-func (d Description) SshKeys() []SSHKey {
+func (d Description) SSHKeys() []SSHKey {
 	for _, i := range d.Items {
 		if i.Key == "ssh-keys" {
 			return parseSSHKeys(i.Value)

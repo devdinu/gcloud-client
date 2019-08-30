@@ -20,7 +20,7 @@ func MapActions(ctx context.Context, db store.DB) {
 	login := InstanceLogin{ctx: ctx, f: db, lister: lister}
 	srch := searcher{ctx: ctx, lister: lister, finder: db}
 
-	actions[config.SshAccess] = AddSSHKeys
+	actions[config.SSHAccess] = AddSSHKeys
 	actions[config.RefreshInstances] = Refresher{ctx: ctx, store: db}.RefreshInstances
 	actions[config.SearchPrefix] = srch.SearchInstancesPrefix
 	actions[config.SearchRegex] = srch.SearchInstancesRegex

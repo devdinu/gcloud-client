@@ -14,10 +14,10 @@ type Instance struct {
 	Project           string             `json:"projectID"`
 }
 
-func (ins Instance) String() string {
-	res := fmt.Sprintf("%-30s : %-50s %-10s", ins.Project, ins.Name, ins.IP())
-	if ins.ExternalIP() != "" {
-		return fmt.Sprintf("%s External: %s", res, ins.ExternalIP())
+func (i Instance) String() string {
+	res := fmt.Sprintf("%-30s : %-50s %-10s", i.Project, i.Name, i.IP())
+	if i.ExternalIP() != "" {
+		return fmt.Sprintf("%s External: %s", res, i.ExternalIP())
 	}
 	return res
 }
@@ -43,8 +43,8 @@ type NetworkInterface struct {
 }
 
 type AccessConfig struct {
-	NatIP string `natIP`
-	Name  string `name`
+	NatIP string `json:"natIP"`
+	Name  string `json:"name"`
 }
 
 func createTempFile(keys []SSHKey) (*os.File, error) {

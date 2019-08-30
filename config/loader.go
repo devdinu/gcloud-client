@@ -33,7 +33,7 @@ type Args struct {
 
 type CmdAction string
 
-const SshAccess CmdAction = "ssh_access"
+const SSHAccess CmdAction = "ssh_access"
 const RefreshInstances CmdAction = "refresh"
 const LoginInstances CmdAction = "login"
 const SearchPrefix CmdAction = "prefix_search"
@@ -95,7 +95,7 @@ func MustLoad() {
 			if args.Filter == "" && args.InstanceName == "" {
 				log.Fatalf("[Config] mention instances search filter for access")
 			}
-			cmdAction = SshAccess
+			cmdAction = SSHAccess
 		} else if os.Args[1] == "instances" {
 			if len(os.Args) < 3 {
 				instanceCommand.Usage()

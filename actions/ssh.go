@@ -38,7 +38,7 @@ func AddSSHKeys(c gcloud.Client, args config.Args) error {
 			fmt.Println(fmt.Errorf("describe instance errored %v", err))
 			return err
 		}
-		keys := desc.SshKeys()
+		keys := desc.SSHKeys()
 		newKey, err := readKey(args.User, args.SSHFile)
 		if err != nil {
 			fmt.Printf("Error adding key to instance %s err: %v\n", inst.Name, err)

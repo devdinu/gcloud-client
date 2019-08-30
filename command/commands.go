@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-func AddSSHKeyCmd(inst, ssh_key_path string, cfg Config) gcloudCommand {
+func AddSSHKeyCmd(inst, kp string, cfg Config) gcloudCommand {
 	return gcloudCommand{
 		name:   "gcloud",
-		cmd:    fmt.Sprintf("compute instances add-metadata %s --metadata-from-file ssh-keys=%s", inst, ssh_key_path),
+		cmd:    fmt.Sprintf("compute instances add-metadata %s --metadata-from-file ssh-keys=%s", inst, kp),
 		config: cfg,
 	}
 }
