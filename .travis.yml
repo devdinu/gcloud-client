@@ -1,0 +1,21 @@
+language: go
+
+go:
+  - "1.12"
+
+os:
+ - linux
+ - osx
+
+env:
+  global:
+  - env GO111MODULE=on
+
+go_import_path: github.com/devdinu/gcloud-client
+
+before_script: go get -u golang.org/x/lint/golint
+
+script: 
+  - go build
+  - go vet
+  - golint

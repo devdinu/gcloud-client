@@ -1,5 +1,6 @@
 # gcloud client
 [![Go Report Card](https://goreportcard.com/badge/github.com/devdinu/gcloud-client)](https://goreportcard.com/report/github.com/devdinu/gcloud-client)
+[![Build Status](https://travis-ci.com/devdinu/gcloud-client.svg?branch=master)](https://travis-ci.com/devdinu/gcloud-client)
 
  scripts to do things which you wish google console client does.
 
