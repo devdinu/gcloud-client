@@ -54,6 +54,7 @@ You could customize the flags
 - `--ssh_key` ssh_key file to be uploaded, defaults to `$HOME/.ssh/id_rsa.pub`
 - `--dbfile` file to store the instances and search, defaults to `$HOME/hosts.db`
 - `--projects` list of project-ids to search for while login, or to refresh
+- `--host_mapping` prints results of `search` command in the format of `/etc/hosts` file
 
 
 ```
@@ -103,7 +104,6 @@ enable syncronized panes, so most cases require you to run command on all machin
 ### TODO:
 * customize which `cmd` to run once ssh to all instances
 * customize login via external ip / internal ip via flags (currently only internal ip is supported)
-* output machine ip mapping so can be added to `/etc/hosts`, or add to file
 * Infer id from ssh key
 * revoking ssh key for user from machine
 * ssh customize project to use via flag
