@@ -9,9 +9,10 @@ import (
 )
 
 type InstanceCmdArgs struct {
-	Prefix  string
-	Regex   string
-	Refresh bool
+	Prefix      string
+	Regex       string
+	Refresh     bool
+	HostMapping bool
 }
 
 type Login struct {
@@ -69,6 +70,7 @@ func MustLoad() {
 	instanceCommand.BoolVar(&instanceArgs.Refresh, "refresh", true, "refresh instances list in store")
 	instanceCommand.StringVar(&instanceArgs.Prefix, "prefix", "", "search instances by common prefix")
 	instanceCommand.StringVar(&instanceArgs.Regex, "regex", "", "search instances by regex")
+	instanceCommand.BoolVar(&instanceArgs.HostMapping, "host_mapping", false, "return the search results in `/etc/hosts` file format")
 	instanceCommand.StringVar(&args.Login.Session, "session", "login-session", "login sesssion name")
 	instanceCommand.StringVar(&args.Login.TemplatesDir, "templates", defaultCfg.TemplatesDir, "templates directory for tmuxinator")
 

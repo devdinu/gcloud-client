@@ -27,9 +27,7 @@ func (s searcher) SearchInstancesPrefix(c gcloud.Client, args config.Args) error
 		return fmt.Errorf("[SearchPrefix] couldn't search instances with prefix %s err: %v", pattern, err)
 	}
 	logger.Infof("Search By Prefix Result: ")
-	for _, ins := range insts {
-		logger.Infof("%s", ins)
-	}
+	s.formatInstances(insts, args)
 	return nil
 }
 
@@ -44,9 +42,7 @@ func (s searcher) SearchInstancesRegex(c gcloud.Client, args config.Args) error 
 		return fmt.Errorf("[SearchRegex] couldn't search instances with regex %s err: %v", regex, err)
 	}
 	logger.Infof("Search By Regex Result: ")
-	for _, ins := range insts {
-		logger.Infof("%s", ins)
-	}
+	s.formatInstances(insts, args)
 	return nil
 }
 
@@ -56,4 +52,18 @@ func (s searcher) searchInstances(c gcloud.Client, args config.Args, matcher sto
 		return nil, err
 	}
 	return s.finder.Search(s.ctx, projs.Names(), matcher)
+}
+
+func (s searcher) formatInstances(insts []gcloud.Instance, args config.Args) error {
+	hostMapping := args.InstanceCmdArgs.HostMapping
+	if hostMapping {
+		for _, ins := range insts {
+			fmt.Printf("%-16s  %s\n", ins.IP(), ins.Name)
+		}
+		return nil
+	}
+	for _, ins := range insts {
+		fmt.Printf("%s\n", ins)
+	}
+	return nil
 }
